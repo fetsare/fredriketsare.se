@@ -1,0 +1,54 @@
+[
+  {
+    "title": "Systemvetardagen",
+    "description": "A project to create a website for the Systemvetardagen event, which is a career fair for IT students. It was built using React with tailwindcss hosted with netlify. ",
+    "image": "/images/systemvetardagen.webp",
+    "link": "https://systemvetardagen.se",
+    "github": "https://github.com/Systemvetardagen/Systemvetardagen2025",
+    "tags": ["React", "TailwindCSS", "Netlify"]
+  },
+  {
+    "title": "num2kana",
+    "description": "Npm package to convert arabic numerals into kanji, hiragana or katakana, useful for learning to count in japanese.",
+    "video": "/videos/num2kana.mp4",
+    "link": "https://num2kana.fredriketsare.se/",
+    "github": "https://www.npmjs.com/package/num2kana",
+    "tags": ["NPM", "TypeScript", "Japanese"]
+  },
+  {
+    "title": "APK Web Extension",
+    "description": "Web extension for systembolaget.se to view and sort by APK value (Alcohol per krona)",
+    "image": "/images/apk.jpg",
+    "link": "https://chromewebstore.google.com/detail/systemet-apk/ilgojcalknncdkjinjcaalhkodlflcef",
+    "github": "https://github.com/Mammamu4/APK-Extension-Systembolaget",
+    "tags": ["Chrome Extension", "JavaScript"]
+  },
+  {
+    "title": "Sorting Algorithm Visualizer",
+    "description": "A web application that visualizes various sorting algorithms. It was built using React with tailwindcss and typescript",
+    "video": "/videos/sorting.mp4",
+    "github": "https://github.com/Mammamu4/sortingalgorithm-visualizer",
+    "tags": ["React", "TypeScript", "TailwindCSS"]
+  },
+  {
+    "title": "Doalot AB",
+    "description": "A website for a IT management company called Doalot AB. It's a Nextjs app with TinaCMS for content management. The website is hosted on Vercel.",
+    "image": "/images/doalot.png",
+    "link": "https://doalot.se",
+    "tags": ["Next.js", "TinaCMS", "Vercel"]
+  },
+  {
+    "title": "SL Departure Kiosk",
+    "description": "A web application that displays real-time departure information for public transport in Stockholm. It was created to be used at my Student Unions bar",
+    "image": "/images/kiosk.png",
+    "github": "https://github.com/Mammamu4/Foo-Bar-Departures",
+    "tags": ["TypeScript", "Real-time Data", "Web App"]
+  },
+  {
+    "title": "Game of Life",
+    "description": "Game of life is a cellular automaton devised by the British mathematician John Horton Conway in 1970. It is a zero-player game, meaning that its evolution is determined by its initial state, requiring no further input.",
+    "video": "/videos/gameoflife.mp4",
+    "github": "https://github.com/fetsare/Game-Of-life",
+    "tags": ["Cellular Automaton", "JavaScript"]
+  }
+]
