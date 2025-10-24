@@ -1,0 +1,22 @@
+[
+  {
+    "href": "https://github.com/fetsare",
+    "icon": "Github",
+    "label": "GitHub"
+  },
+  {
+    "href": "https://www.linkedin.com/in/fredrik-etsare-20a535255/",
+    "icon": "Linkedin",
+    "label": "LinkedIn"
+  },
+  {
+    "href": "mailto:fredrik@etsare.se",
+    "icon": "Mail",
+    "label": "Email"
+  },
+  {
+    "href": "/CV-Fredrik-Etsare.pdf",
+    "icon": "FileUser",
+    "label": "CV"
+  }
+]

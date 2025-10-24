@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
 
@@ -54,4 +55,21 @@ export default async function BlogPost({
       </article>
     </div>
   );
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const post = getPostBySlug(slug);
+  if (!post) return {};
+
+  const description = post.content
+    ? post.content.replace(/\s+/g, " ").slice(0, 160).trim()
+    : "Blog post by Fredrik Etsare.";
+
+  return {
+    title: post.title,
+    description,
+    alternates: { canonical: `/blog/${slug}` },
+    robots: { index: true, follow: true },
+  };
 }

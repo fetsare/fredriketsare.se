@@ -1,4 +1,4 @@
-import type { Project } from "@/content/projects";
+import type { Project } from "@/content/meta";
 import Image from "next/image";
 import { CodeIcon, ExternalLinkIcon } from "lucide-react";
 

@@ -1,17 +1,22 @@
-import Navbar from "@/components/Navbar";
-import Link from "next/link";
+import FadeInSection from "@/components/FadeInSection";
+import DontPressMe from "@/components/DontPressMe";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center px-6">
-      <main className="max-w-2xl w-full">
-        <h1 className="text-4xl md:text-5xl font-bold mb-2 text-black dark:text-white">
-          Fredrik Etsare
-        </h1>
-        <Navbar />
-        <p></p>
-        
-      </main>
+    <div>
+      <FadeInSection direction="right" delay={100}>
+        <p className="text-xl text-gray-700 dark:text-gray-300">
+          Web Developer from Stockholm, Sweden who enjoys creating cool stuff
+          that is not nececsarily useful. Currently prusuing a degree in
+          Computer and System sciences at the{" "}
+          <a className="text-blue-400 hover:underline" href="">
+            Department of Computer- and System Sciences
+          </a>
+          . Some technology i work with are React, Typescript, Golang,
+          Tailwindcss, Nextjs, Java, .NET.
+        </p>
+      </FadeInSection>
+      <DontPressMe />
     </div>
   );
 }
