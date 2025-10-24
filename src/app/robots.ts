@@ -1,22 +1,22 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/seo";
 
-export default function robots(): MetadataRoute.Robots {
-  if (!SITE_URL) {
-    return {
-      rules: {
-        userAgent: "*",
-        allow: "/",
-      },
-    };
-  }
+export const dynamic = "force-static";
 
-  return {
-    rules: {
+export default function robots(): MetadataRoute.Robots {
+  const rules = [
+    {
       userAgent: "*",
       allow: "/",
     },
+  ];
+
+  if (!SITE_URL) {
+    return { rules };
+  }
+
+  return {
+    rules,
     sitemap: `${SITE_URL}/sitemap.xml`,
-    host: SITE_URL,
   };
 }
