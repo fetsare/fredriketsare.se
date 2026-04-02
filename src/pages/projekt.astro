@@ -1,0 +1,131 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import me from "../assets/me.webp";
+import num2kana from "../assets/num2kana.mp4";
+
+type MediaSource = { src: string } | string;
+
+type Project = {
+  title: string;
+  description: string;
+  image: MediaSource;
+  video?: MediaSource;
+  href?: string;
+};
+
+const escapeHtml = (value: string) =>
+  value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+
+const isAllowedHref = (href: string) => {
+  if (href.startsWith("/")) return true;
+
+  try {
+    const { protocol } = new URL(href);
+    return (
+      protocol === "http:" || protocol === "https:" || protocol === "mailto:"
+    );
+  } catch {
+    return false;
+  }
+};
+
+const renderDescription = (text: string) => {
+  const escapedText = escapeHtml(text);
+
+  return escapedText.replace(
+    /\[([^\]]+)\]\(([^)]+)\)/g,
+    (_match, label, href) => {
+      const cleanHref = String(href).trim();
+      if (!isAllowedHref(cleanHref)) return label;
+
+      return `<a href="${escapeHtml(cleanHref)}" target="_blank" rel="noopener noreferrer">${label}</a>`;
+    },
+  );
+};
+
+const getMediaSrc = (media: MediaSource) =>
+  typeof media === "string" ? media : media.src;
+
+const projects: Project[] = [
+  {
+    title: "fredriketsare.se",
+    description:
+      "Denna sida är byggd på [Astro](https://astro.build/) och hostas på [cloudflare pages](https://pages.cloudflare.com/). Här kan du läsa om mig och mina projekt, kul att du kom hit, om du vill skapa en liknande sida hittar du git repot [här](https://github.com/fetsare/fredriketsare.se). Alla hemsidabilder togs med [click.grj.se](https://click.grj.se) av [Gunnar R Johansson](https://gunnar.se)",
+    image: me,
+    href: "https://fredriketsare.se",
+  },
+];
+---
+
+<BaseLayout description="Projekt av Fredrik Etsare.">
+  <section>
+    {
+      projects.map((project, index) => (
+        <article>
+          {project.video ? (
+            <video class="project-media" controls preload="metadata">
+              <source src={getMediaSrc(project.video)} />
+              Din webbläsare stödjer inte videouppspelning.
+            </video>
+          ) : (
+            <img
+              class="project-media"
+              src={getMediaSrc(project.image)}
+              alt={project.title}
+              loading="lazy"
+            />
+          )}
+
+          <h4>
+            {project.href ? (
+              <a href={project.href} target="_blank" rel="noopener noreferrer">
+                {project.title}
+              </a>
+            ) : (
+              project.title
+            )}
+          </h4>
+
+          <p set:html={renderDescription(project.description)} />
+
+          {index < projects.length - 1 && <hr class="project-divider" />}
+        </article>
+      ))
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  article {
+    margin-bottom: 1.75rem;
+  }
+
+  .project-media {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+  }
+
+  /* margin reset */
+  article h3,
+  article p {
+    margin: 0;
+  }
+
+  article h3 {
+    margin-bottom: 0.75rem;
+  }
+
+  .project-divider {
+    border-top-color: rgb(var(--surface-divider));
+    margin-top: 1.2rem;
+  }
+</style>

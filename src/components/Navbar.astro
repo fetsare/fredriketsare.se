@@ -1,0 +1,51 @@
+---
+import HeaderLink from "./HeaderLink.astro";
+---
+
+<nav class="navbar" aria-label="Main navigation">
+  <div class="navbar-inner">
+    <HeaderLink href="/">Blog</HeaderLink>
+    <span class="separator" aria-hidden="true">~</span>
+    <HeaderLink href="/projekt">Mina Projekt</HeaderLink>
+    <!-- <span class="separator" aria-hidden="true">~</span>
+    <HeaderLink href="/about">Om</HeaderLink> -->
+  </div>
+</nav>
+
+<style>
+  .navbar {
+    border-top: 1px solid rgb(var(--surface-divider));
+    border-bottom: 0;
+    background: var(--page-bg);
+  }
+
+  .navbar-inner {
+    width: 720px;
+    max-width: calc(100% - 2em);
+    margin: 0 auto;
+    padding: 0.7em 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.4rem;
+    color: rgb(var(--text-muted));
+    font-size: 1em;
+  }
+
+  .navbar-inner :global(a) {
+    color: rgb(var(--text-muted));
+    text-decoration: none;
+  }
+
+  .navbar-inner :global(a:hover),
+  .navbar-inner :global(a.active) {
+    color: rgb(var(--text-primary));
+    text-decoration: none;
+  }
+
+  .separator {
+    color: rgb(var(--text-muted));
+    opacity: 0.75;
+    padding: 0 0.25em;
+  }
+</style>
