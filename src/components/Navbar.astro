@@ -1,14 +1,18 @@
 ---
 import HeaderLink from "./HeaderLink.astro";
+import { NAV_LINKS } from "../consts";
 ---
 
 <nav class="navbar" aria-label="Main navigation">
   <div class="navbar-inner">
-    <HeaderLink href="/">Blog</HeaderLink>
-    <span class="separator" aria-hidden="true">~</span>
-    <HeaderLink href="/projekt">Mina Projekt</HeaderLink>
-    <!-- <span class="separator" aria-hidden="true">~</span>
-    <HeaderLink href="/about">Om</HeaderLink> -->
+    {
+      NAV_LINKS.map((link, index) => (
+        <>
+          <HeaderLink href={link.href}>{link.label}</HeaderLink>
+          {index < NAV_LINKS.length - 1 && <span class="separator" aria-hidden="true">,</span>}
+        </>
+      ))
+    }
   </div>
 </nav>
 
@@ -27,7 +31,7 @@ import HeaderLink from "./HeaderLink.astro";
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    gap: 0.4rem;
+    gap: 0;
     color: rgb(var(--text-muted));
     font-size: 1em;
   }
@@ -44,8 +48,8 @@ import HeaderLink from "./HeaderLink.astro";
   }
 
   .separator {
+    margin: 0 0.4rem;
     color: rgb(var(--text-muted));
     opacity: 0.75;
-    padding: 0 0.25em;
   }
 </style>
