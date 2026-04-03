@@ -8,24 +8,24 @@ import { REVIEW_NAV_LINKS } from "../../consts";
 const entry = await getEntry("reviews", "ol");
 
 if (!entry) {
-	throw new Error("Missing review entry: reviews/ol.md");
+	throw new Error("Missing image category entry: reviews/ol.md");
 }
 
 const { Content } = await render(entry);
 ---
 
 <BaseLayout
-	description={entry.data.description ?? `Recensioner: ${entry.data.title}`}
+	description={entry.data.description ?? `Bilder: ${entry.data.title}`}
 >
 	<div class="review-subnav">
-		<Navbar links={REVIEW_NAV_LINKS} ariaLabel="Recensioner navigation" />
+		<Navbar links={REVIEW_NAV_LINKS} ariaLabel="Images navigation" />
 	</div>
 
 	<section class="prose">
 		<Content />
 	</section>
 
-	<ReviewGrid items={entry.data.items} ratingEmoji={entry.data.ratingEmoji} />
+	<ReviewGrid items={entry.data.items} emptyText="Inga öl ännu." />
 </BaseLayout>
 
 <style>

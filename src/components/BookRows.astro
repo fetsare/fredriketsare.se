@@ -1,0 +1,151 @@
+---
+interface BookItem {
+  title: string;
+  author: string;
+  rating: number;
+  cover: string;
+  link?: string;
+}
+
+interface Props {
+  items: BookItem[];
+  emptyText?: string;
+}
+
+const { items, emptyText = "Inga böcker ännu." } = Astro.props as Props;
+
+const toRating = (rating: number) => Math.max(1, Math.min(10, rating));
+---
+
+{
+  items.length > 0 ? (
+    <div class="book-rows" role="list" aria-label="Bokrecensioner">
+      {
+        items.map((book) => (
+          <article class="book-row" role="listitem">
+            <a
+              class="book-cover-link"
+              href={book.link ?? book.cover}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Öppna ${book.title}`}
+            >
+              <img class="book-cover" src={book.cover} alt={`Omslag: ${book.title}`} loading="lazy" />
+            </a>
+
+            <div class="book-meta">
+              {book.link ? (
+                <a class="book-title" href={book.link} target="_blank" rel="noopener noreferrer">
+                  {book.title}
+                </a>
+              ) : (
+                <span class="book-title">{book.title}</span>
+              )}
+              <span class="book-author">{book.author}</span>
+            </div>
+
+            <span class="book-rating" aria-label={`${toRating(book.rating)} av 10`}>
+              {toRating(book.rating)}/10
+            </span>
+          </article>
+        ))
+      }
+    </div>
+  ) : (
+    <p class="empty-state">{emptyText}</p>
+  )
+}
+
+<style>
+  .book-rows {
+    margin: 1.2rem 0 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .book-row {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    gap: 0.65rem;
+    align-items: center;
+    padding: 0.4rem 0.45rem;
+    border: 1px solid rgb(var(--surface-divider));
+    border-radius: 8px;
+    background: rgba(var(--gray-dark), 0.35);
+  }
+
+  .book-cover-link {
+    display: block;
+    line-height: 0;
+  }
+
+  .book-cover {
+    width: 44px;
+    height: 62px;
+    object-fit: cover;
+    border-radius: 4px;
+    display: block;
+  }
+
+  .book-meta {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.08rem;
+  }
+
+  .book-title {
+    color: rgb(var(--text-primary));
+    text-decoration: none;
+    font-size: 0.88em;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .book-title:hover {
+    text-decoration: underline;
+  }
+
+  .book-author {
+    color: rgb(var(--text-muted));
+    font-size: 0.72em;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .book-rating {
+    color: rgb(var(--text-primary));
+    font-size: 0.78em;
+    line-height: 1;
+    border: 1px solid rgb(var(--surface-divider));
+    border-radius: 999px;
+    padding: 0.28rem 0.5rem;
+  }
+
+  .empty-state {
+    margin-top: 0.5rem;
+    color: rgb(var(--text-muted));
+  }
+
+  @media (max-width: 520px) {
+    .book-row {
+      grid-template-columns: 40px minmax(0, 1fr);
+    }
+
+    .book-rating {
+      grid-column: 2;
+      justify-self: start;
+      margin-top: 0.2rem;
+    }
+
+    .book-cover {
+      width: 40px;
+      height: 58px;
+    }
+  }
+</style>

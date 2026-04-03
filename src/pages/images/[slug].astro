@@ -14,29 +14,29 @@ export const getStaticPaths: GetStaticPaths = async () => {
 const { slug } = Astro.params;
 
 if (!slug) {
-  throw new Error("Missing review slug.");
+  throw new Error("Missing image category slug.");
 }
 
 const entry = await getEntry("reviews", slug);
 
 if (!entry) {
-  throw new Error(`Missing review entry: reviews/${slug}.md`);
+  throw new Error(`Missing image category entry: reviews/${slug}.md`);
 }
 
 const { Content } = await render(entry);
 ---
 
 <BaseLayout
-  description={entry.data.description ?? `Recensioner: ${entry.data.title}`}
+  description={entry.data.description ?? `Bilder: ${entry.data.title}`}
 >
   <div class="review-subnav">
-    <Navbar links={REVIEW_NAV_LINKS} ariaLabel="Recensioner navigation" />
+    <Navbar links={REVIEW_NAV_LINKS} ariaLabel="Images navigation" />
   </div>
   <section class="prose">
     <Content />
   </section>
 
-  <ReviewGrid items={entry.data.items} ratingEmoji={entry.data.ratingEmoji} />
+  <ReviewGrid items={entry.data.items} emptyText={`Inga bilder i ${entry.data.title} ännu.`} />
 </BaseLayout>
 
 <style>

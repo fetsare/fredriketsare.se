@@ -1,24 +1,24 @@
 ---
 import { getEntry, render } from "astro:content";
-import BaseLayout from "../layouts/BaseLayout.astro";
-import ReviewGrid from "../components/ReviewGrid.astro";
-import Navbar from "../components/Navbar.astro";
-import { REVIEW_NAV_LINKS } from "../consts";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ReviewGrid from "../../components/ReviewGrid.astro";
+import Navbar from "../../components/Navbar.astro";
+import { REVIEW_NAV_LINKS } from "../../consts";
 
 const entry = await getEntry("reviews", "ol");
 
 if (!entry) {
-	throw new Error("Missing review entry: reviews/ol.md");
+	throw new Error("Missing image category entry: reviews/ol.md");
 }
 
 const { Content } = await render(entry);
 ---
 
 <BaseLayout
-	description={entry.data.description ?? `Recensioner: ${entry.data.title}`}
+	description={entry.data.description ?? `Bilder: ${entry.data.title}`}
 >
 	<div class="review-subnav">
-		<Navbar links={REVIEW_NAV_LINKS} ariaLabel="Recensioner navigation" />
+		<Navbar links={REVIEW_NAV_LINKS} ariaLabel="Bilder navigation" />
 	</div>
 
 	<section class="prose">
