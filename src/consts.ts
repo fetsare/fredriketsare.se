@@ -3,9 +3,9 @@ export const SITE_DESCRIPTION = "Systemutvecklare och gillar att bygga hemsidor,
 
 export const NAV_LINKS = [
 	{ href: "/", label: "Blog" },
-	{ href: "/projekt", label: "Mina Projekt" },
+	{ href: "/projekt", label: "Projekt" },
 	{ href: "/mig", label: "Mig" },
-	{ href: "/recensioner", label: "Recensioner" },
+	{ href: "/recensioner", label: "Ratings" },
 ] as const;
 
 export const REVIEW_NAV_LINKS = [
