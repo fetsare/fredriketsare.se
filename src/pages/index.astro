@@ -1,22 +1,23 @@
 ---
-import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
+import { SITE_DESCRIPTION } from "../consts";
 import BlogPost from "../components/BlogPost.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getCollection, render } from "astro:content";
 
 const posts = await getCollection("blog");
+const visiblePosts = posts.filter((post) => !post.data.draft);
 ---
 
 <BaseLayout description={SITE_DESCRIPTION}>
   {
-    posts.map(async (post, index) => {
+    visiblePosts.map(async (post, index) => {
       const { Content } = await render(post);
       return (
         <>
           <BlogPost {...post.data}>
             <Content />
           </BlogPost>
-          {index < posts.length - 1 && <hr class="blog-divider" />}
+          {index < visiblePosts.length - 1 && <hr class="blog-divider" />}
         </>
       );
     })
