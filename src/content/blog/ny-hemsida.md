@@ -1,7 +1,6 @@
 ---
 title: "Ny hemsida!"
 pubDate: "Apr 3 2026"
-draft: true
 ---
 
 #### Ny hemsida!
