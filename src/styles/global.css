@@ -1,4 +1,5 @@
 :root {
+  --primary: #3a86ff;
   --accent: #2337ff;
   --accent-dark: #000d8a;
   --black: 15, 18, 25;
@@ -154,6 +155,7 @@ hr {
 .image-grid-2x2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: auto;
   gap: 0.75rem;
   margin: 2rem 0;
 }
@@ -175,4 +177,14 @@ hr {
   font-size: 0.85em;
   line-height: 1.3;
   color: rgb(var(--text-muted));
+}
+
+.image-grid-2x2 figcaption p {
+  margin: 0.25rem 0 0;
+}
+
+@media (max-width: 720px) {
+  .image-grid-2x2 {
+    grid-template-columns: 1fr;
+  }
 }
