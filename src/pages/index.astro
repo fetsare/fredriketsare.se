@@ -9,13 +9,23 @@ const posts = await getCollection("blog");
 
 <BaseLayout description={SITE_DESCRIPTION}>
   {
-    posts.map(async (post) => {
+    posts.map(async (post, index) => {
       const { Content } = await render(post);
       return (
-        <BlogPost {...post.data}>
-          <Content />
-        </BlogPost>
+        <>
+          <BlogPost {...post.data}>
+            <Content />
+          </BlogPost>
+          {index < posts.length - 1 && <hr class="blog-divider" />}
+        </>
       );
     })
   }
 </BaseLayout>
+
+<style>
+  .blog-divider {
+    border-top-color: rgb(var(--surface-divider));
+    margin: 4rem 0;
+  }
+</style>

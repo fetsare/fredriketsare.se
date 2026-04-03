@@ -1,17 +1,31 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import me from "../assets/me.webp";
+import doalot from "../assets/doalot-se.webp";
 import num2kana from "../assets/num2kana.mp4";
+import kiosk from "../assets/kiosk.webp";
+import svd from "../assets/systemvetardagen-se.webp";
+import ak from "../assets/www-akademiskkvart-se.webp";
 
 type MediaSource = { src: string } | string;
 
-type Project = {
+type ProjectBase = {
   title: string;
   description: string;
-  image: MediaSource;
-  video?: MediaSource;
   href?: string;
 };
+
+type ProjectWithImage = ProjectBase & {
+  image: MediaSource;
+  video?: never;
+};
+
+type ProjectWithVideo = ProjectBase & {
+  video: MediaSource;
+  image?: never;
+};
+
+type Project = ProjectWithImage | ProjectWithVideo;
 
 const escapeHtml = (value: string) =>
   value
@@ -51,7 +65,44 @@ const renderDescription = (text: string) => {
 const getMediaSrc = (media: MediaSource) =>
   typeof media === "string" ? media : media.src;
 
+const hasVideo = (project: Project): project is ProjectWithVideo =>
+  project.video !== undefined;
+
 const projects: Project[] = [
+  {
+    title: "akademiskkvart.se",
+    description:
+      "IT-projektledare för vidareutvecklingen av Akademisk kvart, en andrahandsplattform för studentbostäder. Jag ansvarar för hela projektet: hela AWS stacken, frontend, SEO och design. Arbetet sker under [SSCO](https://ssco.se/).",
+    image: ak,
+    href: "https://www.akademiskkvart.se",
+  },
+  {
+    title: "foobar depart",
+    description:
+      "En tidtabell för bussar, tåg och tunnelbana från Kista. Jag installerade den i studentpuben [Foo Bar](https://maps.app.goo.gl/z1dmB1u3RpFBVK2d6) för att aldrig missa tuben igen. Byggd med data från [Trafiklab](https://www.trafiklab.se/) och deras API [ResRobot V2](https://www.trafiklab.se/api/our-apis/resrobot-v21/).",
+    image: kiosk,
+    href: "https://depart.fredriketsare.se",
+  },
+  {
+    title: "Systemvetardagen",
+    description:
+      "Systemvetardagen är en arbetsmässa för IT-studenter som arrangeras av [Studentkåren DISK](https://www.disk.su.se/). Jag har jobbat med mässan i tre år och har framför allt drivit och utvecklat hemsidan.",
+    image: svd,
+    href: "https://systemvetardagen.se",
+  },
+  {
+    title: "num2kana",
+    description:
+      "Ett npm paket för att översätta siffror till dess japanska skrivformer. Jag skapade detta mest för att lära mig japanska siffror/räkneord men samtidigt npm-ekosystemet. Här är själva [npm paketet](https://www.npmjs.com/package/num2kana)",
+    video: num2kana,
+    href: "https://num2kana.fredriketsare.se",
+  },
+  {
+    title: "doalot.se",
+    description: "En portfölj sida för [Doalot AB](https://doalot.se)",
+    image: doalot,
+    href: "https://doalot.se",
+  },
   {
     title: "fredriketsare.se",
     description:
@@ -67,8 +118,15 @@ const projects: Project[] = [
     {
       projects.map((project, index) => (
         <article>
-          {project.video ? (
-            <video class="project-media" controls preload="metadata">
+          {hasVideo(project) ? (
+            <video
+              class="project-media"
+              autoplay
+              loop
+              muted
+              playsinline
+              preload="metadata"
+            >
               <source src={getMediaSrc(project.video)} />
               Din webbläsare stödjer inte videouppspelning.
             </video>
@@ -126,6 +184,6 @@ const projects: Project[] = [
 
   .project-divider {
     border-top-color: rgb(var(--surface-divider));
-    margin-top: 1.2rem;
+    margin: 4rem 0;
   }
 </style>
