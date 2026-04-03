@@ -59,4 +59,18 @@ const { items, emptyText = "Inga bilder ännu." } = Astro.props;
     margin-top: 0.5rem;
     color: rgb(var(--text-muted));
   }
+
+  @media (max-width: 720px) {
+    .rating-value {
+      display: none;
+    }
+    .rating-emojis {
+      font-size: 0.9em;
+    }
+  }
+
+  .image-grid-2x2 figure img {
+    background-color: #2a2a2a;
+    border-radius: 8px; /* Optional, for consistent rounded corners */
+  }
 </style>
