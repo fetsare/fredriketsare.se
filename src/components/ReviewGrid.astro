@@ -15,7 +15,7 @@ const { items, ratingEmoji = "🍺" } = Astro.props;
 
 const toRating = (rating: number) => {
   const count = Math.max(1, Math.min(5, rating));
-  return Array.from({ length: count }, () => ratingEmoji).join(" ");
+  return Array.from({ length: count }, () => ratingEmoji).join("");
 };
 
 const toRatingValue = (rating: number) => Math.max(1, Math.min(5, rating));
@@ -51,9 +51,9 @@ const toRatingValue = (rating: number) => Math.max(1, Math.min(5, rating));
 
   .rating-emojis {
     display: flex;
-    margin-top: 0.22rem;
+    margin-top: 0.15rem;
     align-items: center;
-    gap: 0.45rem;
+    gap: 0.2rem;
     font-size: 1.2em;
     line-height: 1.2;
   }
@@ -61,5 +61,19 @@ const toRatingValue = (rating: number) => Math.max(1, Math.min(5, rating));
   .rating-value {
     font-size: 0.72em;
     color: rgb(var(--text-muted));
+  }
+
+  @media (max-width: 720px) {
+    .rating-value {
+      display: none;
+    }
+    .rating-emojis {
+      font-size: 0.9em;
+    }
+  }
+
+  .image-grid-2x2 figure img {
+    background-color: #2a2a2a;
+    border-radius: 8px; /* Optional, for consistent rounded corners */
   }
 </style>
