@@ -11,4 +11,5 @@ export const NAV_LINKS = [
 export const REVIEW_NAV_LINKS = [
 	{ href: "/recensioner/ol", label: "Öl" },
 	{ href: "/recensioner/kyrkor", label: "Kyrkor" },
+	{ href: "/recensioner/bocker", label: "Böcker" },
 ] as const;
