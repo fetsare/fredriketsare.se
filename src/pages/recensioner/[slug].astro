@@ -14,13 +14,13 @@ export const getStaticPaths: GetStaticPaths = async () => {
 const { slug } = Astro.params;
 
 if (!slug) {
-  return Astro.redirect("/recensioner");
+  throw new Error("Missing review slug.");
 }
 
 const entry = await getEntry("reviews", slug);
 
 if (!entry) {
-  return Astro.redirect("/recensioner");
+  throw new Error(`Missing review entry: reviews/${slug}.md`);
 }
 
 const { Content } = await render(entry);
