@@ -1,15 +1,30 @@
 ---
 import HeaderLink from "./HeaderLink.astro";
 import { NAV_LINKS } from "../consts";
+
+type NavLink = {
+  href: string;
+  label: string;
+};
+
+interface Props {
+  links?: readonly NavLink[];
+  ariaLabel?: string;
+}
+
+const {
+  links = NAV_LINKS,
+  ariaLabel = "Main navigation",
+} = Astro.props as Props;
 ---
 
-<nav class="navbar" aria-label="Main navigation">
+<nav class="navbar" aria-label={ariaLabel}>
   <div class="navbar-inner">
     {
-      NAV_LINKS.map((link, index) => (
+      links.map((link, index) => (
         <>
           <HeaderLink href={link.href}>{link.label}</HeaderLink>
-          {index < NAV_LINKS.length - 1 && <span class="separator" aria-hidden="true">,</span>}
+          {index < links.length - 1 && <span class="separator" aria-hidden="true">,</span>}
         </>
       ))
     }
@@ -18,7 +33,6 @@ import { NAV_LINKS } from "../consts";
 
 <style>
   .navbar {
-    border-top: 1px solid rgb(var(--surface-divider));
     border-bottom: 0;
     background: var(--page-bg);
   }
@@ -42,9 +56,10 @@ import { NAV_LINKS } from "../consts";
   }
 
   .navbar-inner :global(a:hover),
-  .navbar-inner :global(a.active) {
-    color: rgb(var(--text-primary));
-    text-decoration: none;
+  .navbar-inner :global(a.active),
+  .navbar-inner :global(a[aria-current="page"]) {
+    color: white;
+    text-decoration: underline;
   }
 
   .separator {

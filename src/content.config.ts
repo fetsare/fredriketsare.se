@@ -11,4 +11,21 @@ const blog = defineCollection({
     }),
 });
 
-export const collections = { blog };
+const reviews = defineCollection({
+  loader: glob({ base: "./src/content/reviews", pattern: "**/*.md" }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    ratingEmoji: z.string().optional(),
+    items: z.array(
+      z.object({
+        name: z.string(),
+        rating: z.number().int().min(1).max(5),
+        image: z.string(),
+        link: z.string().url().optional(),
+      }),
+    ),
+  }),
+});
+
+export const collections = { blog, reviews };

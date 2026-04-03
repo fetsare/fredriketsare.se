@@ -1,0 +1,65 @@
+---
+interface ReviewItem {
+  name: string;
+  rating: number;
+  image: string;
+  link?: string;
+}
+
+interface Props {
+  items: ReviewItem[];
+  ratingEmoji?: string;
+}
+
+const { items, ratingEmoji = "🍺" } = Astro.props;
+
+const toRating = (rating: number) => {
+  const count = Math.max(1, Math.min(5, rating));
+  return Array.from({ length: count }, () => ratingEmoji).join(" ");
+};
+
+const toRatingValue = (rating: number) => Math.max(1, Math.min(5, rating));
+---
+
+<div class="image-grid-2x2">
+  {
+    items.map((item) => (
+      <figure>
+        <img src={item.image} alt={item.name} loading="lazy" />
+        <figcaption>
+          {item.link ? (
+            <a class="review-name" href={item.link} target="_blank" rel="noopener noreferrer">
+              {item.name}
+            </a>
+          ) : (
+            <span class="review-name">{item.name}</span>
+          )}
+          <span class="rating-emojis" aria-label={`${toRatingValue(item.rating)} av 5`}>
+            <span>{toRating(item.rating)}</span>
+            <span class="rating-value">{toRatingValue(item.rating)}/5</span>
+          </span>
+        </figcaption>
+      </figure>
+    ))
+  }
+</div>
+
+<style>
+  .review-name {
+    display: inline-block;
+  }
+
+  .rating-emojis {
+    display: flex;
+    margin-top: 0.22rem;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 1.2em;
+    line-height: 1.2;
+  }
+
+  .rating-value {
+    font-size: 0.72em;
+    color: rgb(var(--text-muted));
+  }
+</style>
