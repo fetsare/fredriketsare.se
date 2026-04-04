@@ -3,7 +3,7 @@ import { getEntry, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ReviewGrid from "../../components/ReviewGrid.astro";
 import Navbar from "../../components/Navbar.astro";
-import { REVIEW_NAV_LINKS } from "../../consts";
+import { getReviewNavLinks } from "../../i18n";
 
 const entry = await getEntry("reviews", "ol");
 
@@ -15,17 +15,19 @@ const { Content } = await render(entry);
 ---
 
 <BaseLayout
-	description={entry.data.description ?? `Bilder: ${entry.data.title}`}
+	description={entry.data.description ?? `Images: ${entry.data.title}`}
+	locale="en"
+	canonicalPath="/en/images"
 >
 	<div class="review-subnav">
-		<Navbar links={REVIEW_NAV_LINKS} ariaLabel="Images navigation" />
+		<Navbar links={getReviewNavLinks("en")} locale="en" ariaLabel="Images navigation" />
 	</div>
 
 	<section class="prose">
 		<Content />
 	</section>
 
-	<ReviewGrid items={entry.data.items} emptyText="Inga öl ännu." />
+	<ReviewGrid items={entry.data.items} emptyText="No beers yet." />
 </BaseLayout>
 
 <style>

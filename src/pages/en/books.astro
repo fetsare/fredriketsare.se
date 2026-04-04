@@ -1,0 +1,27 @@
+---
+import { getEntry, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import BookRows from "../../components/BookRows.astro";
+
+const entry = await getEntry("booksEn", "books");
+
+if (!entry) {
+  throw new Error("Missing books entry: books/books.md");
+}
+
+const { Content } = await render(entry);
+---
+
+<BaseLayout description={entry.data.description ?? `Books: ${entry.data.title}`} locale="en">
+  <section class="prose">
+    <Content />
+  </section>
+
+  <BookRows items={entry.data.items} />
+</BaseLayout>
+
+<style>
+  .prose :global(:first-child) {
+    margin-top: 0;
+  }
+</style>

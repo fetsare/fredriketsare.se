@@ -1,6 +1,6 @@
 ---
 import HeaderLink from "./HeaderLink.astro";
-import { NAV_LINKS } from "../consts";
+import { getMainNavLinks, type SiteLocale } from "../i18n";
 
 type NavLink = {
   href: string;
@@ -10,10 +10,12 @@ type NavLink = {
 interface Props {
   links?: readonly NavLink[];
   ariaLabel?: string;
+  locale?: SiteLocale;
 }
 
 const {
-  links = NAV_LINKS,
+  locale = "sv",
+  links = getMainNavLinks(locale),
   ariaLabel = "Main navigation",
 } = Astro.props as Props;
 ---

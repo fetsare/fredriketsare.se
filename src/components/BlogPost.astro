@@ -5,6 +5,7 @@ import FormattedDate from "../components/FormattedDate.astro";
 type Props = CollectionEntry<"blog">["data"];
 
 const { pubDate } = Astro.props;
+const locale = Astro.url.pathname.startsWith("/en") ? "en" : "sv";
 ---
 
 <style>
@@ -24,7 +25,7 @@ const { pubDate } = Astro.props;
 <article>
   <div class="prose">
     <div class="date">
-      <FormattedDate date={pubDate} />
+      <FormattedDate date={pubDate} locale={locale} />
     </div>
     <slot />
   </div>

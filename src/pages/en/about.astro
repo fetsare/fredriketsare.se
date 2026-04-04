@@ -1,0 +1,29 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import MigContent from "../../content/mig.en.md";
+---
+
+<BaseLayout description="About Fredrik Etsare." locale="en">
+  <section class="mig-content">
+    <MigContent />
+  </section>
+</BaseLayout>
+
+<style>
+  .mig-content :global(img) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+  }
+
+  .mig-content :global(p) {
+    margin: 0 0 0.9rem;
+  }
+
+  .mig-content :global(p:last-of-type) {
+    margin-bottom: 0;
+  }
+</style>

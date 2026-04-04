@@ -5,11 +5,26 @@ type Props = HTMLAttributes<'a'>;
 
 const { href, class: className, ...props } = Astro.props;
 const pathname = Astro.url.pathname;
-const subpath = pathname.match(/[^\/]+/g);
 
-const isActive = href === '/' 
-  ? pathname === '/' 
-  : pathname === href || pathname.startsWith(href + '/');
+const normalizePath = (path: string) => {
+	if (path.length > 1 && path.endsWith("/")) return path.slice(0, -1);
+	return path;
+};
+
+const normalizedPathname = normalizePath(pathname);
+const normalizedHref = normalizePath(String(href ?? ""));
+
+const isBlogRoot =
+	(normalizedHref === "/" && (normalizedPathname === "/" || /^\/\d+$/.test(normalizedPathname))) ||
+	(normalizedHref === "/en" &&
+		(normalizedPathname === "/en" || /^\/en\/\d+$/.test(normalizedPathname)));
+
+const isBlogNavLink = normalizedHref === "/" || normalizedHref === "/en";
+
+const isActive = isBlogNavLink
+	? isBlogRoot
+	: normalizedPathname === normalizedHref ||
+		normalizedPathname.startsWith(`${normalizedHref}/`);
 ---
 
 <a href={href} class:list={[className, { active: isActive }]} {...props}>

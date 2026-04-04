@@ -1,0 +1,49 @@
+---
+import { SITE_DESCRIPTION_EN } from "../../consts";
+import BlogPost from "../../components/BlogPost.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection, render } from "astro:content";
+
+const POSTS_PER_PAGE = 5;
+const posts = await getCollection("blogEn");
+const visiblePosts = posts.filter((post) => !post.data.draft);
+const paginatedPosts = visiblePosts.slice(0, POSTS_PER_PAGE);
+const totalPages = Math.ceil(visiblePosts.length / POSTS_PER_PAGE);
+---
+
+<BaseLayout description={SITE_DESCRIPTION_EN} locale="en">
+  {
+    paginatedPosts.map(async (post, index) => {
+      const { Content } = await render(post);
+      return (
+        <>
+          <BlogPost {...post.data}>
+            <Content />
+          </BlogPost>
+          {index < paginatedPosts.length - 1 && <hr class="blog-divider" />}
+        </>
+      );
+    })
+  }
+
+  {
+    totalPages > 1 && (
+      <nav class="pagination" aria-label="Blog pagination">
+        <a href="/en/2" rel="next">Older posts →</a>
+      </nav>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .blog-divider {
+    border-top-color: rgb(var(--surface-divider));
+    margin: 4rem 0;
+  }
+
+  .pagination {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: flex-end;
+  }
+</style>

@@ -1,0 +1,63 @@
+---
+import type { GetStaticPaths } from "astro";
+import { SITE_DESCRIPTION_EN } from "../../consts";
+import BlogPost from "../../components/BlogPost.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection, render, type CollectionEntry } from "astro:content";
+
+type BlogEntry = CollectionEntry<"blogEn">;
+type PaginatedBlogPage = {
+  data: BlogEntry[];
+  url: {
+    prev?: string;
+    next?: string;
+  };
+};
+
+export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
+  const POSTS_PER_PAGE = 5;
+  const posts = await getCollection("blogEn");
+  const visiblePosts = posts.filter((post) => !post.data.draft);
+
+  return paginate(visiblePosts, { pageSize: POSTS_PER_PAGE }).filter(
+    (entry) => Boolean(entry.params.page),
+  );
+};
+
+const { page } = Astro.props as { page: PaginatedBlogPage };
+---
+
+<BaseLayout description={SITE_DESCRIPTION_EN} locale="en">
+  {
+    page.data.map(async (post, index) => {
+      const { Content } = await render(post);
+      return (
+        <>
+          <BlogPost {...post.data}>
+            <Content />
+          </BlogPost>
+          {index < page.data.length - 1 && <hr class="blog-divider" />}
+        </>
+      );
+    })
+  }
+
+  <nav class="pagination" aria-label="Blog pagination">
+    {page.url.prev && <a href={page.url.prev} rel="prev">← Newer posts</a>}
+    {page.url.next && <a href={page.url.next} rel="next">Older posts →</a>}
+  </nav>
+</BaseLayout>
+
+<style>
+  .blog-divider {
+    border-top-color: rgb(var(--surface-divider));
+    margin: 4rem 0;
+  }
+
+  .pagination {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+</style>

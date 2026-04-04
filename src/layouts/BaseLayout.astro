@@ -5,26 +5,43 @@ import BaseHead from "../components/BaseHead.astro";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import Navbar from "../components/Navbar.astro";
+import { getLocaleFromPathname, getLocalizedPath, type SiteLocale } from "../i18n";
 
 interface Props {
   description: string;
   image?: ImageMetadata;
+  locale?: SiteLocale;
+  canonicalPath?: string;
 }
 
-const { description, image } = Astro.props;
+const { description, image, locale: propLocale, canonicalPath } = Astro.props;
+const locale = propLocale ?? getLocaleFromPathname(Astro.url.pathname);
+const currentPath = canonicalPath ?? Astro.url.pathname;
+
+const alternateUrls = {
+  sv: new URL(getLocalizedPath(currentPath, "sv"), Astro.site),
+  en: new URL(getLocalizedPath(currentPath, "en"), Astro.site),
+};
 ---
 
 <!doctype html>
-<html lang="sv">
+<html lang={locale}>
   <head>
-    <BaseHead title={SITE_TITLE} description={description} image={image} />
+    <BaseHead
+      title={SITE_TITLE}
+      description={description}
+      image={image}
+      locale={locale}
+      alternateUrls={alternateUrls}
+      canonicalPath={currentPath}
+    />
   </head>
   <body>
-    <Header />
-    <Navbar />
+    <Header locale={locale} />
+    <Navbar locale={locale} />
     <main>
       <slot />
     </main>
-    <Footer />
+    <Footer locale={locale} />
   </body>
 </html>

@@ -1,0 +1,188 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import me from "../../assets/me.webp";
+import doalot from "../../assets/doalot-se.webp";
+import num2kana from "../../assets/num2kana.mp4";
+import kiosk from "../../assets/kiosk.webp";
+import svd from "../../assets/systemvetardagen-se.webp";
+import ak from "../../assets/www-akademiskkvart-se.webp";
+
+type MediaSource = { src: string } | string;
+
+type ProjectBase = {
+  title: string;
+  description: string;
+  href?: string;
+};
+
+type ProjectWithImage = ProjectBase & {
+  image: MediaSource;
+  video?: never;
+};
+
+type ProjectWithVideo = ProjectBase & {
+  video: MediaSource;
+  image?: never;
+};
+
+type Project = ProjectWithImage | ProjectWithVideo;
+
+const escapeHtml = (value: string) =>
+  value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+
+const isAllowedHref = (href: string) => {
+  if (href.startsWith("/")) return true;
+
+  try {
+    const { protocol } = new URL(href);
+    return (
+      protocol === "http:" || protocol === "https:" || protocol === "mailto:"
+    );
+  } catch {
+    return false;
+  }
+};
+
+const renderDescription = (text: string) => {
+  const escapedText = escapeHtml(text);
+
+  return escapedText.replace(
+    /\[([^\]]+)\]\(([^)]+)\)/g,
+    (_match, label, href) => {
+      const cleanHref = String(href).trim();
+      if (!isAllowedHref(cleanHref)) return label;
+
+      return `<a href="${escapeHtml(cleanHref)}" target="_blank" rel="noopener noreferrer">${label}</a>`;
+    },
+  );
+};
+
+const getMediaSrc = (media: MediaSource) =>
+  typeof media === "string" ? media : media.src;
+
+const hasVideo = (project: Project): project is ProjectWithVideo =>
+  project.video !== undefined;
+
+const projects: Project[] = [
+  {
+    title: "akademiskkvart.se",
+    description:
+      "I lead web development for Akademisk kvart, a secondary housing marketplace for students. I am responsible for the full project scope: AWS stack, frontend, SEO, and design. The work is done under [SSCO](https://ssco.se/).",
+    image: ak,
+    href: "https://www.akademiskkvart.se",
+  },
+  {
+    title: "foobar depart",
+    description:
+      "A departure board for buses, trains, and subway traffic from Kista. I installed it in the student pub [Foo Bar](https://maps.app.goo.gl/z1dmB1u3RpFBVK2d6) to never miss the subway again. Built with open data from [Trafiklab](https://www.trafiklab.se/) and their API [ResRobot V2](https://www.trafiklab.se/api/our-apis/resrobot-v21/).",
+    image: kiosk,
+    href: "https://depart.fredriketsare.se",
+  },
+  {
+    title: "Systemvetardagen",
+    description:
+      "Systemvetardagen is a career fair for IT students arranged by [Studentkåren DISK](https://www.disk.su.se/). I have worked with the fair for three years, mainly driving and developing the website.",
+    image: svd,
+    href: "https://systemvetardagen.se",
+  },
+  {
+    title: "num2kana",
+    description:
+      "An npm package that converts numbers into Japanese number writing. I built it to learn Japanese counting and the npm ecosystem at the same time. You can find the [npm package here](https://www.npmjs.com/package/num2kana).",
+    video: num2kana,
+    href: "https://num2kana.fredriketsare.se",
+  },
+  {
+    title: "doalot.se",
+    description: "A portfolio website for [Doalot AB](https://doalot.se)",
+    image: doalot,
+    href: "https://doalot.se",
+  },
+  {
+    title: "fredriketsare.se",
+    description:
+      "This website is built with [Astro](https://astro.build/) and hosted on [Cloudflare Pages](https://pages.cloudflare.com/). Here you can read about me and my projects. If you want to build something similar, the repository is available [here](https://github.com/fetsare/fredriketsare.se). All website photos were taken by [Gunnar R Johansson](https://gunnar.se) via [click.grj.se](https://click.grj.se).",
+    image: me,
+    href: "https://fredriketsare.se",
+  },
+];
+---
+
+<BaseLayout description="Projects by Fredrik Etsare." locale="en">
+  <section>
+    {
+      projects.map((project, index) => (
+        <article>
+          {hasVideo(project) ? (
+            <video
+              class="project-media"
+              autoplay
+              loop
+              muted
+              playsinline
+              preload="metadata"
+            >
+              <source src={getMediaSrc(project.video)} />
+              Your browser does not support video playback.
+            </video>
+          ) : (
+            <img
+              class="project-media"
+              src={getMediaSrc(project.image)}
+              alt={project.title}
+              loading="lazy"
+            />
+          )}
+
+          <h4>
+            {project.href ? (
+              <a href={project.href} target="_blank" rel="noopener noreferrer">
+                {project.title}
+              </a>
+            ) : (
+              project.title
+            )}
+          </h4>
+
+          <p set:html={renderDescription(project.description)} />
+
+          {index < projects.length - 1 && <hr class="project-divider" />}
+        </article>
+      ))
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  article {
+    margin-bottom: 1.75rem;
+  }
+
+  .project-media {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+  }
+
+  article h4,
+  article p {
+    margin: 0;
+  }
+
+  article h4 {
+    margin-bottom: 0.75rem;
+  }
+
+  .project-divider {
+    border-top-color: rgb(var(--surface-divider));
+    margin: 4rem 0;
+  }
+</style>

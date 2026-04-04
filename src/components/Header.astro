@@ -1,11 +1,19 @@
 ---
 import AvatarImage from "../assets/fredrik.webp";
+import { getLocalizedPath, getOtherLocale, type SiteLocale } from "../i18n";
+
+const locale: SiteLocale = Astro.props.locale ?? "sv";
+const homePath = locale === "en" ? "/en" : "/";
+const switchToLocale = getOtherLocale(locale);
+const switchPath = getLocalizedPath(Astro.url.pathname, switchToLocale);
+const switchLabel = switchToLocale === "en" ? "English" : "Svenska";
+const switchLabelShort = switchToLocale === "en" ? "En" : "Sv";
 ---
 
 <header>
   <div class="header-inner">
     <h2>
-      <a href="/">
+      <a href={homePath}>
         <img
           class="avatar"
           src={AvatarImage.src}
@@ -17,13 +25,17 @@ import AvatarImage from "../assets/fredrik.webp";
       </a>
     </h2>
     <div class="social-links">
+      <a class="locale-switch" href={switchPath} hreflang={switchToLocale} lang={switchToLocale}>
+        <span class="locale-label-full">{switchLabel}</span>
+        <span class="locale-label-short">{switchLabelShort}</span>
+      </a>
       <a
         class="cv"
         href="/CV-Fredrik-Etsare.pdf"
         target="_blank"
         rel="noopener noreferrer"
       >
-        <span class="sr-only">Open my CV (PDF)</span>
+        <span class="sr-only">{locale === "en" ? "Open my CV (PDF)" : "Öppna mitt CV (PDF)"}</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -45,7 +57,7 @@ import AvatarImage from "../assets/fredrik.webp";
         </svg>
       </a>
       <a class="mail" href="mailto:fredrik@etsare.se">
-        <span class="sr-only">Email me</span>
+        <span class="sr-only">{locale === "en" ? "Email me" : "Maila mig"}</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -68,7 +80,7 @@ import AvatarImage from "../assets/fredrik.webp";
         target="_blank"
         rel="noopener noreferrer"
       >
-        <span class="sr-only">Go to my LinkedIn</span>
+        <span class="sr-only">{locale === "en" ? "Go to my LinkedIn" : "Gå till min LinkedIn"}</span>
         <svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24">
           <path
             fill="currentColor"
@@ -82,7 +94,7 @@ import AvatarImage from "../assets/fredrik.webp";
         target="_blank"
         rel="noopener noreferrer"
       >
-        <span class="sr-only">Go to my github</span>
+        <span class="sr-only">{locale === "en" ? "Go to my GitHub" : "Gå till min GitHub"}</span>
         <svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32"
           ><path
             fill="currentColor"
@@ -151,6 +163,26 @@ import AvatarImage from "../assets/fredrik.webp";
     text-decoration: none;
   }
 
+  .social-links a.locale-switch {
+    width: auto;
+    height: auto;
+    font-size: 0.88rem;
+    color: rgb(var(--text-muted));
+  }
+
+  .social-links a.locale-switch .locale-label-short {
+    display: none;
+  }
+
+  .social-links a.locale-switch .locale-label-full {
+    display: inline;
+  }
+
+  .social-links a.locale-switch:hover {
+    color: rgb(var(--text-primary));
+    text-decoration: underline;
+  }
+
   .social-links a svg {
     width: 20px;
     height: 20px;
@@ -168,8 +200,22 @@ import AvatarImage from "../assets/fredrik.webp";
   }
 
   @media (max-width: 720px) {
-    .social-links {
+    .social-links a:not(.locale-switch) {
       display: none;
+    }
+
+    .social-links {
+      gap: 0;
+    }
+  }
+
+  @media (max-width: 350px) {
+    .social-links a.locale-switch .locale-label-full {
+      display: none !important;
+    }
+
+    .social-links a.locale-switch .locale-label-short {
+      display: inline !important;
     }
   }
 </style>

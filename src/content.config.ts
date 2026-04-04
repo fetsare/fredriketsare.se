@@ -11,6 +11,15 @@ const blog = defineCollection({
     }),
 });
 
+const blogEn = defineCollection({
+  loader: glob({ base: "./src/content/en/blog", pattern: "**/*.{md,mdx}" }),
+  schema: ({ image }) =>
+    z.object({
+      pubDate: z.coerce.date(),
+      draft: z.boolean().optional(),
+    }),
+});
+
 const reviews = defineCollection({
   loader: glob({ base: "./src/content/reviews", pattern: "**/*.md" }),
   schema: z.object({
@@ -43,4 +52,21 @@ const books = defineCollection({
   }),
 });
 
-export const collections = { blog, reviews, books };
+const booksEn = defineCollection({
+  loader: glob({ base: "./src/content/en/books", pattern: "**/*.md" }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    items: z.array(
+      z.object({
+        title: z.string(),
+        author: z.string(),
+        publishedYear: z.string().optional(),
+        cover: z.string(),
+        link: z.string().optional(),
+      }),
+    ).default([]),
+  }),
+});
+
+export const collections = { blog, blogEn, reviews, books, booksEn };

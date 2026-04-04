@@ -1,26 +1,18 @@
 ---
 import type { GetStaticPaths } from "astro";
 import { getCollection, getEntry, render } from "astro:content";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import ReviewGrid from "../../components/ReviewGrid.astro";
-import Navbar from "../../components/Navbar.astro";
-import { getReviewNavLinks } from "../../i18n";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import ReviewGrid from "../../../components/ReviewGrid.astro";
+import Navbar from "../../../components/Navbar.astro";
+import { getReviewNavLinks } from "../../../i18n";
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const pages = await getCollection("reviews");
-  const mapped = pages.flatMap((page) => {
-    if (page.id === "kyrkor") {
-      return [{ params: { slug: "kyrkor" } }, { params: { slug: "churches" } }];
-    }
-
-    if (page.id === "ol") {
-      return [{ params: { slug: "ol" } }, { params: { slug: "beer" } }];
-    }
-
-    return [{ params: { slug: page.id } }];
-  });
-
-  return mapped;
+  return pages.map((page) => ({
+    params: {
+      slug: page.id === "kyrkor" ? "churches" : page.id === "ol" ? "beer" : page.id,
+    },
+  }));
 };
 
 const slugParam = Astro.params.slug;
@@ -44,7 +36,7 @@ const { Content } = await render(entry);
 <BaseLayout
   description={entry.data.description ?? `Images: ${entry.data.title}`}
   locale="en"
-  canonicalPath={`/en/images/${slug === "kyrkor" ? "churches" : slug === "ol" ? "beer" : slug}`}
+  canonicalPath={`/en/images/${slug}`}
 >
   <div class="review-subnav">
     <Navbar links={getReviewNavLinks("en")} locale="en" ariaLabel="Images navigation" />

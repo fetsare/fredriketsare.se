@@ -1,17 +1,26 @@
 ---
-import { NAV_LINKS } from "../consts";
+import { getMainNavLinks, type SiteLocale } from "../i18n";
 
 const today = new Date();
+const locale: SiteLocale = Astro.props.locale ?? "sv";
+const navLinks = getMainNavLinks(locale);
+const copyrightText =
+  locale === "en"
+    ? `© ${today.getFullYear()} Fredrik Etsare.`
+    : `© ${today.getFullYear()} Fredrik Etsare.`;
 ---
 
 <footer>
   <div class="footer-inner">
-    <div class="internal-links" aria-label="Footer navigation">
+    <div
+      class="internal-links"
+      aria-label={locale === "en" ? "Footer navigation" : "Sidfotsnavigering"}
+    >
       {
-        NAV_LINKS.map((link, index) => (
+        navLinks.map((link, index) => (
           <>
             <a href={link.href}>{link.label}</a>
-            {index < NAV_LINKS.length - 1 && <span class="separator" aria-hidden="true">,</span>}
+            {index < navLinks.length - 1 && <span class="separator" aria-hidden="true">,</span>}
           </>
         ))
       }
@@ -24,7 +33,7 @@ const today = new Date();
         target="_blank"
         rel="noopener noreferrer"
       >
-        <span class="sr-only">Open my CV (PDF)</span>
+        <span class="sr-only">{locale === "en" ? "Open my CV (PDF)" : "Öppna mitt CV (PDF)"}</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -47,7 +56,7 @@ const today = new Date();
       </a>
 
       <a class="mail" href="mailto:fredrik@etsare.se">
-        <span class="sr-only">Email me</span>
+        <span class="sr-only">{locale === "en" ? "Email me" : "Maila mig"}</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -71,7 +80,7 @@ const today = new Date();
         target="_blank"
         rel="noopener noreferrer"
       >
-        <span class="sr-only">Go to my LinkedIn</span>
+        <span class="sr-only">{locale === "en" ? "Go to my LinkedIn" : "Gå till min LinkedIn"}</span>
         <svg viewBox="0 0 24 24" aria-hidden="true" width="24" height="24">
           <path
             fill="currentColor"
@@ -86,7 +95,7 @@ const today = new Date();
         target="_blank"
         rel="noopener noreferrer"
       >
-        <span class="sr-only">Go to my github</span>
+        <span class="sr-only">{locale === "en" ? "Go to my GitHub" : "Gå till min GitHub"}</span>
         <svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32"
           ><path
             fill="currentColor"
@@ -96,7 +105,7 @@ const today = new Date();
       </a>
     </div>
 
-    <p class="copyright">&copy; {today.getFullYear()} Fredrik Etsare. All rights reserved.</p>
+    <p class="copyright">{copyrightText}</p>
   </div>
 </footer>
 <style>
