@@ -1,0 +1,44 @@
+---
+import { getEntry, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ReviewGrid from "../../components/ReviewGrid.astro";
+import Navbar from "../../components/Navbar.astro";
+import { REVIEW_NAV_LINKS } from "../../consts";
+
+const entry = await getEntry("reviews", "ol");
+
+if (!entry) {
+	throw new Error("Missing image category entry: reviews/ol.md");
+}
+
+const { Content } = await render(entry);
+---
+
+<BaseLayout
+	description={entry.data.description ?? `Bilder: ${entry.data.title}`}
+>
+	<div class="review-subnav">
+		<Navbar links={REVIEW_NAV_LINKS} ariaLabel="Bilder navigation" />
+	</div>
+
+	<section class="prose">
+		<Content />
+	</section>
+
+	<ReviewGrid items={entry.data.items} emptyText="Inga öl ännu." />
+</BaseLayout>
+
+<style>
+	.review-subnav {
+		margin-top: -0.7rem;
+		margin-bottom: 0.6rem;
+	}
+
+	.review-subnav :global(.navbar-inner) {
+		width: 100%;
+		max-width: 100%;
+		margin: 0;
+		padding-top: 0.35rem;
+		padding-bottom: 0.35rem;
+	}
+</style>

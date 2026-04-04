@@ -16,16 +16,31 @@ const reviews = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
-    ratingEmoji: z.string().optional(),
     items: z.array(
       z.object({
         name: z.string(),
-        rating: z.number().int().min(1).max(5),
         image: z.string(),
         link: z.string().url().optional(),
       }),
-    ),
+    ).default([]),
   }),
 });
 
-export const collections = { blog, reviews };
+const books = defineCollection({
+  loader: glob({ base: "./src/content/books", pattern: "**/*.md" }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    items: z.array(
+      z.object({
+        title: z.string(),
+        author: z.string(),
+        publishedYear: z.string().optional(),
+        cover: z.string(),
+        link: z.string().optional(),
+      }),
+    ).default([]),
+  }),
+});
+
+export const collections = { blog, reviews, books };

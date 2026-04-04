@@ -1,14 +1,14 @@
 ---
 import { getEntry, render } from "astro:content";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import ReviewGrid from "../../components/ReviewGrid.astro";
-import Navbar from "../../components/Navbar.astro";
-import { REVIEW_NAV_LINKS } from "../../consts";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ReviewGrid from "../components/ReviewGrid.astro";
+import Navbar from "../components/Navbar.astro";
+import { REVIEW_NAV_LINKS } from "../consts";
 
-const entry = await getEntry("reviews", "ol");
+const entry = await getEntry("reviews", "kyrkor");
 
 if (!entry) {
-	throw new Error("Missing review entry: reviews/ol.md");
+	throw new Error("Missing review entry: reviews/kyrkor.md");
 }
 
 const { Content } = await render(entry);
@@ -25,7 +25,7 @@ const { Content } = await render(entry);
 		<Content />
 	</section>
 
-	<ReviewGrid items={entry.data.items} ratingEmoji={entry.data.ratingEmoji} />
+	<ReviewGrid items={entry.data.items} />
 </BaseLayout>
 
 <style>

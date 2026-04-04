@@ -1,0 +1,166 @@
+---
+interface BookItem {
+  title: string;
+  author: string;
+  publishedYear?: string;
+  cover: string;
+  link?: string;
+}
+
+interface Props {
+  items: BookItem[];
+  emptyText?: string;
+}
+
+const { items, emptyText = "Inga böcker ännu." } = Astro.props as Props;
+
+const toBookSearchUrl = (book: Pick<BookItem, "title" | "author">) => {
+  const query = `${book.title} ${book.author}`.trim().toLowerCase().replace(/\s+/g, "+");
+  return `https://isbndb.com/search/books/${encodeURIComponent(query)}`;
+};
+---
+
+{
+  items.length > 0 ? (
+    <div class="book-rows" role="list" aria-label="Bokrecensioner">
+      {items.map((book) => {
+        const searchUrl = toBookSearchUrl(book);
+
+        return (
+          <a
+            class="book-row"
+            role="listitem"
+            href={searchUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Öppna ${book.title}`}
+          >
+            <img
+              class="book-cover"
+              src={book.cover}
+              alt={`Omslag: ${book.title}`}
+              loading="lazy"
+            />
+
+            <div class="book-meta">
+              <span class="book-title">{book.title}</span>
+              <span class="book-author">{book.author}</span>
+              {book.publishedYear?.trim() && (
+                <span
+                  class="book-year"
+                  aria-label={`Utgiven ${book.publishedYear}`}
+                >
+                  {book.publishedYear}
+                </span>
+              )}
+            </div>
+
+            <span class="book-chevron" aria-hidden="true">›</span>
+          </a>
+        );
+      })}
+    </div>
+  ) : (
+    <p class="empty-state">{emptyText}</p>
+  )
+}
+
+<style>
+  .book-rows {
+    margin: 1.2rem 0 2rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .book-row {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    gap: 0.65rem;
+    align-items: center;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid rgba(var(--surface-divider), 0.45);
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .book-row:last-child {
+    border-bottom: 0;
+  }
+
+  .book-cover {
+    width: 44px;
+    height: 62px;
+    object-fit: cover;
+    border-radius: 4px;
+    display: block;
+  }
+
+  .book-meta {
+    grid-column: 2;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .book-title {
+    color: rgb(var(--text-primary));
+    text-decoration: none;
+    font-size: 0.88em;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .book-row:hover .book-title {
+    text-decoration: underline;
+  }
+
+  .book-author {
+    color: rgb(var(--text-muted));
+    font-size: 0.72em;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .book-year {
+    color: rgb(var(--text-muted));
+    font-size: 0.7em;
+    line-height: 1.1;
+  }
+
+  .book-chevron {
+    grid-column: 3;
+    grid-row: 1;
+    color: rgba(var(--text-muted), 0.65);
+    font-size: 1.05rem;
+    line-height: 1;
+    align-self: center;
+    justify-self: end;
+    transition: transform 140ms ease, color 140ms ease;
+  }
+
+  .book-row:hover .book-chevron {
+    color: rgb(var(--text-primary));
+    transform: translateY(-1px);
+  }
+
+  .empty-state {
+    margin-top: 0.5rem;
+    color: rgb(var(--text-muted));
+  }
+
+  @media (max-width: 520px) {
+    .book-row {
+      grid-template-columns: 40px minmax(0, 1fr) auto;
+    }
+
+    .book-cover {
+      width: 40px;
+      height: 58px;
+    }
+  }
+</style>

@@ -5,10 +5,11 @@ export const NAV_LINKS = [
 	{ href: "/", label: "Blog" },
 	{ href: "/projekt", label: "Projekt" },
 	{ href: "/mig", label: "Mig" },
-	{ href: "/recensioner", label: "Ratings" },
+	{ href: "/bilder", label: "Bilder" },
+	{ href: "/books", label: "Böcker" },
 ] as const;
 
 export const REVIEW_NAV_LINKS = [
-	{ href: "/recensioner/ol", label: "Öl" },
-	{ href: "/recensioner/kyrkor", label: "Kyrkor" },
+	{ href: "/bilder/ol", label: "Öl" },
+	{ href: "/bilder/kyrkor", label: "Kyrkor" },
 ] as const;
