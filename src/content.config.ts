@@ -35,7 +35,7 @@ const books = defineCollection({
       z.object({
         title: z.string(),
         author: z.string(),
-        rating: z.coerce.number().int().min(1).max(10),
+        publishedYear: z.string().optional(),
         cover: z.string(),
         link: z.string().optional(),
       }),

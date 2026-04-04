@@ -19,3 +19,9 @@ const { Content } = await render(entry);
 
   <BookRows items={entry.data.items} />
 </BaseLayout>
+
+<style>
+  .prose :global(:first-child) {
+    margin-top: 0;
+  }
+</style>
