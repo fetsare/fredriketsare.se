@@ -1,0 +1,76 @@
+---
+import type { GetStaticPaths } from "astro";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../../consts";
+import BlogPost from "../../components/BlogPost.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import {
+  getUniqueSlug,
+  isFeatured,
+  resolveFeaturedSeo,
+} from "../../utils/featuredSeo";
+
+type FeaturedBlogPost = CollectionEntry<"blog">;
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const posts: FeaturedBlogPost[] = await getCollection("blog");
+  const usedSlugs = new Set<string>();
+
+  return posts
+    .filter((post) => !post.data.draft && isFeatured(post.data.featured))
+    .map((post) => {
+      const seo = resolveFeaturedSeo({
+        title: post.data.title,
+        body: post.body,
+        featured: post.data.featured,
+        siteTitle: SITE_TITLE,
+        fallbackDescription: SITE_DESCRIPTION,
+      });
+
+      return {
+        params: { slug: getUniqueSlug(seo.slug, usedSlugs) },
+        props: { post },
+      };
+    });
+};
+
+const { post } = Astro.props as { post: FeaturedBlogPost };
+const { Content } = await render(post);
+
+const seo = resolveFeaturedSeo({
+  title: post.data.title,
+  body: post.body,
+  featured: post.data.featured,
+  siteTitle: SITE_TITLE,
+  fallbackDescription: SITE_DESCRIPTION,
+});
+
+const canonicalPath = `/featured/${Astro.params.slug}`;
+const seoTitle = seo.seoTitle;
+const seoDescription = seo.seoDescription;
+
+const jsonLd = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: post.data.title,
+  datePublished: post.data.pubDate.toISOString(),
+  mainEntityOfPage: new URL(canonicalPath, Astro.site).toString(),
+  description: seoDescription,
+});
+---
+
+<BaseLayout
+  title={seoTitle}
+  description={seoDescription}
+  canonicalPath={canonicalPath}
+  metaType="article"
+  publishedTime={post.data.pubDate.toISOString()}
+>
+  <BlogPost {...post.data}>
+    <Content />
+  </BlogPost>
+
+  <p><a href="/">← Tillbaka till bloggen</a></p>
+
+  <script type="application/ld+json" set:html={jsonLd} />
+</BaseLayout>

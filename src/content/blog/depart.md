@@ -2,6 +2,7 @@
 title: "Foo Depart"
 pubDate: "Apr 14 2026"
 draft: True
+# featured: True
 ---
 
 #### Foo Depart

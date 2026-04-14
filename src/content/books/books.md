@@ -10,6 +10,10 @@ items:
     author: "Marcus Aurelius"
     publishedYear: "170AD"
     cover: /images/books/aurelius.jpg
+  - title: "Notes From Underground"
+    author: "Fyodor Mikhailovich Dostoevsky"
+    publishedYear: "1864"
+    cover: /images/books/notes_from_underground.jpg
   - title: "Dune"
     author: "Frank Herbert"
     publishedYear: "1965"

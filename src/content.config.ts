@@ -6,8 +6,20 @@ const blog = defineCollection({
   loader: glob({ base: "./src/content/blog", pattern: "**/*.{md,mdx}" }),
   schema: ({ image }) =>
     z.object({
+      title: z.string(),
+      description: z.string().optional(),
       pubDate: z.coerce.date(),
       draft: z.boolean().optional(),
+      featured: z
+        .union([
+          z.boolean(),
+          z.object({
+            slug: z.string().min(1).optional(),
+            seoTitle: z.string().optional(),
+            seoDescription: z.string().optional(),
+          }),
+        ])
+        .optional(),
     }),
 });
 
@@ -15,8 +27,20 @@ const blogEn = defineCollection({
   loader: glob({ base: "./src/content/en/blog", pattern: "**/*.{md,mdx}" }),
   schema: ({ image }) =>
     z.object({
+      title: z.string(),
+      description: z.string().optional(),
       pubDate: z.coerce.date(),
       draft: z.boolean().optional(),
+      featured: z
+        .union([
+          z.boolean(),
+          z.object({
+            slug: z.string().min(1).optional(),
+            seoTitle: z.string().optional(),
+            seoDescription: z.string().optional(),
+          }),
+        ])
+        .optional(),
     }),
 });
 

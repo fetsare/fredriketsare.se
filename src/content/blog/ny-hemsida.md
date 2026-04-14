@@ -1,6 +1,7 @@
 ---
 title: "Ny hemsida!"
 pubDate: "Apr 3 2026"
+# featured: True
 ---
 
 #### Ny hemsida!
