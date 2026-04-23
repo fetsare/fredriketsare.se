@@ -1,13 +1,10 @@
 ---
-title: "Foo Depart"
-pubDate: "Apr 14 2026"
-draft: True
+title: "Missa aldrig tuben!"
+pubDate: "Apr 23 2026"
 # featured: True
 ---
 
-#### Foo Depart
-
-![Foo Depart bild](/images/)
+![Foo Depart](/images/foo-depart.webp)
 
 Byggde en egen tidtabell för att aldrig igen missa tunnelbanan igen på vägen hem från studentpuben [Foo Bar](https://maps.app.goo.gl/TgiGXqVqhSn2ttnFA) vid [Studentkaren DISK](https://disk.su.se). Gäster kan nu se när nästa bussar, tunnelbanor och pendeltåg går och får även en stor röd varning när sista tuben är på ingång.
 
