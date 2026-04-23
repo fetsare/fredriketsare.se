@@ -7,7 +7,6 @@ export const NAV_LINKS = [
 	{ href: "/", label: "Blog" },
 	{ href: "/projekt", label: "Projekt" },
 	{ href: "/mig", label: "Mig" },
-	{ href: "/bilder", label: "Bilder" },
 	{ href: "/books", label: "Böcker" },
 ] as const;
 
@@ -15,7 +14,6 @@ export const NAV_LINKS_EN = [
 	{ href: "/en", label: "Blog" },
 	{ href: "/en/projects", label: "Projects" },
 	{ href: "/en/about", label: "About" },
-	{ href: "/en/images", label: "Images" },
 	{ href: "/en/books", label: "Books" },
 ] as const;
 
