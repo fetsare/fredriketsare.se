@@ -4,25 +4,15 @@ export const SITE_DESCRIPTION = "Systemutvecklare och gillar att bygga hemsidor,
 export const SITE_DESCRIPTION_EN = "Software developer who enjoys building websites, playing piano, and drinking beer in my free time.";
 
 export const NAV_LINKS = [
-	{ href: "/", label: "Blog" },
-	{ href: "/projekt", label: "Projekt" },
-	{ href: "/mig", label: "Mig" },
-	{ href: "/books", label: "Böcker" },
+	{ href: "/", label: "Blog", icon: "home" },
+	{ href: "/projekt", label: "Projekt", icon: "projects" },
+	{ href: "/mig", label: "Mig", icon: "about" },
+	{ href: "/books", label: "Böcker", icon: "books" },
 ] as const;
 
 export const NAV_LINKS_EN = [
-	{ href: "/en", label: "Blog" },
-	{ href: "/en/projects", label: "Projects" },
-	{ href: "/en/about", label: "About" },
-	{ href: "/en/books", label: "Books" },
-] as const;
-
-export const REVIEW_NAV_LINKS = [
-	{ href: "/bilder/ol", label: "Öl" },
-	{ href: "/bilder/kyrkor", label: "Kyrkor" },
-] as const;
-
-export const REVIEW_NAV_LINKS_EN = [
-	{ href: "/en/images/beer", label: "Beer" },
-	{ href: "/en/images/churches", label: "Churches" },
+	{ href: "/en", label: "Blog", icon: "home" },
+	{ href: "/en/projects", label: "Projects", icon: "projects" },
+	{ href: "/en/about", label: "About", icon: "about" },
+	{ href: "/en/books", label: "Books", icon: "books" },
 ] as const;
