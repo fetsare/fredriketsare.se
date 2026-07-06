@@ -1,9 +1,4 @@
-import {
-  NAV_LINKS,
-  NAV_LINKS_EN,
-  REVIEW_NAV_LINKS,
-  REVIEW_NAV_LINKS_EN,
-} from "./consts";
+import { NAV_LINKS, NAV_LINKS_EN } from "./consts";
 
 export type SiteLocale = "sv" | "en";
 
@@ -18,16 +13,12 @@ const SV_TO_EN_SEGMENT: Record<string, string> = {
   projekt: "projects",
   mig: "about",
   bilder: "images",
-  kyrkor: "churches",
-  ol: "beer",
 };
 
 const EN_TO_SV_SEGMENT: Record<string, string> = {
   projects: "projekt",
   about: "mig",
   images: "bilder",
-  churches: "kyrkor",
-  beer: "ol",
 };
 
 const normalizePath = (pathname: string) => {
@@ -93,6 +84,3 @@ export const getOtherLocale = (locale: SiteLocale): SiteLocale =>
 
 export const getMainNavLinks = (locale: SiteLocale): readonly NavLink[] =>
   locale === "en" ? NAV_LINKS_EN : NAV_LINKS;
-
-export const getReviewNavLinks = (locale: SiteLocale): readonly NavLink[] =>
-  locale === "en" ? REVIEW_NAV_LINKS_EN : REVIEW_NAV_LINKS;

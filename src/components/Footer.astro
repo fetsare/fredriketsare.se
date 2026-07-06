@@ -16,14 +16,7 @@ const copyrightText =
       class="internal-links"
       aria-label={locale === "en" ? "Footer navigation" : "Sidfotsnavigering"}
     >
-      {
-        navLinks.map((link, index) => (
-          <>
-            <a href={link.href}>{link.label}</a>
-            {index < navLinks.length - 1 && <span class="separator" aria-hidden="true">,</span>}
-          </>
-        ))
-      }
+      {navLinks.map((link) => <a href={link.href}>{link.label}</a>)}
     </div>
 
     <div class="social-links">
@@ -129,7 +122,9 @@ const copyrightText =
   .internal-links {
     display: flex;
     align-items: center;
-    gap: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.3rem 1rem;
     font-size: 1rem;
   }
 
@@ -140,12 +135,7 @@ const copyrightText =
 
   .internal-links a:hover {
     color: rgb(var(--text-primary));
-  }
-
-  .separator {
-    margin: 0 0.4rem;
-    color: rgb(var(--text-muted));
-    opacity: 0.75;
+    text-decoration: underline;
   }
 
   .social-links {

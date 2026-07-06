@@ -44,21 +44,6 @@ const blogEn = defineCollection({
     }),
 });
 
-const reviews = defineCollection({
-  loader: glob({ base: "./src/content/reviews", pattern: "**/*.md" }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string().optional(),
-    items: z.array(
-      z.object({
-        name: z.string(),
-        image: z.string(),
-        link: z.string().url().optional(),
-      }),
-    ).default([]),
-  }),
-});
-
 const books = defineCollection({
   loader: glob({ base: "./src/content/books", pattern: "**/*.md" }),
   schema: z.object({
@@ -93,4 +78,4 @@ const booksEn = defineCollection({
   }),
 });
 
-export const collections = { blog, blogEn, reviews, books, booksEn };
+export const collections = { blog, blogEn, books, booksEn };
