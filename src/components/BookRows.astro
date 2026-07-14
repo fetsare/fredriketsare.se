@@ -10,66 +10,198 @@ interface BookItem {
 interface Props {
   items: BookItem[];
   emptyText?: string;
+  locale?: "sv" | "en";
 }
 
-const { items, emptyText = "Inga böcker ännu." } = Astro.props as Props;
+const { items, emptyText = "Inga böcker ännu.", locale = "sv" } = Astro.props as Props;
 
 const toBookSearchUrl = (book: Pick<BookItem, "title" | "author">) => {
   const query = `${book.title} ${book.author}`.trim().toLowerCase().replace(/\s+/g, "+");
   return `https://isbndb.com/search/books/${encodeURIComponent(query)}`;
 };
+
+const t =
+  locale === "en"
+    ? { sortLabel: "Sort books", title: "Title", author: "Author", year: "Year" }
+    : { sortLabel: "Sortera böcker", title: "Titel", author: "Författare", year: "År" };
+
+const sortButtons = [
+  { key: "author", label: t.author },
+  { key: "title", label: t.title },
+  { key: "year", label: t.year },
+] as const;
+
+const sortedItems = [...items].sort((a, b) =>
+  a.author.localeCompare(b.author, locale, { sensitivity: "base" }),
+);
 ---
 
 {
-  items.length > 0 ? (
-    <div class="book-rows" role="list" aria-label="Bokrecensioner">
-      {items.map((book) => {
-        const searchUrl = toBookSearchUrl(book);
-
-        return (
-          <a
-            class="book-row"
-            role="listitem"
-            href={searchUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`Öppna ${book.title}`}
+  sortedItems.length > 0 ? (
+    <div class="book-list-widget" data-locale={locale} data-sort-key="author" data-sort-dir="asc">
+      <div class="sort-toolbar" role="group" aria-label={t.sortLabel}>
+        {sortButtons.map((btn) => (
+          <button
+            type="button"
+            class:list={["sort-button", { active: btn.key === "author" }]}
+            data-sort={btn.key}
+            aria-pressed={btn.key === "author" ? "true" : "false"}
           >
-            <img
-              class="book-cover"
-              src={book.cover}
-              alt={`Omslag: ${book.title}`}
-              loading="lazy"
-            />
+            {btn.label}
+            <span class="sort-arrow" aria-hidden="true">
+              {btn.key === "author" ? "↑" : ""}
+            </span>
+          </button>
+        ))}
+      </div>
 
-            <div class="book-meta">
-              <span class="book-title">{book.title}</span>
-              <span class="book-author">{book.author}</span>
-              {book.publishedYear?.trim() && (
-                <span
-                  class="book-year"
-                  aria-label={`Utgiven ${book.publishedYear}`}
-                >
-                  {book.publishedYear}
-                </span>
-              )}
-            </div>
+      <div class="book-rows" role="list" aria-label="Bokrecensioner">
+        {sortedItems.map((book) => {
+          const searchUrl = toBookSearchUrl(book);
+          const yearValue = book.publishedYear ? parseInt(book.publishedYear, 10) || 0 : 0;
 
-            <span class="book-chevron" aria-hidden="true">›</span>
-          </a>
-        );
-      })}
+          return (
+            <a
+              class="book-row"
+              role="listitem"
+              href={searchUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Öppna ${book.title}`}
+              data-title={book.title.toLowerCase()}
+              data-author={book.author.toLowerCase()}
+              data-year={yearValue}
+            >
+              <img
+                class="book-cover"
+                src={book.cover}
+                alt={`Omslag: ${book.title}`}
+                loading="lazy"
+              />
+
+              <div class="book-meta">
+                <span class="book-title">{book.title}</span>
+                <span class="book-author">{book.author}</span>
+                {book.publishedYear?.trim() && (
+                  <span
+                    class="book-year"
+                    aria-label={`Utgiven ${book.publishedYear}`}
+                  >
+                    {book.publishedYear}
+                  </span>
+                )}
+              </div>
+
+              <span class="book-chevron" aria-hidden="true">›</span>
+            </a>
+          );
+        })}
+      </div>
     </div>
   ) : (
     <p class="empty-state">{emptyText}</p>
   )
 }
 
+<script>
+  function initBookSort(widget: Element) {
+    const container = widget.querySelector(".book-rows");
+    const buttons = widget.querySelectorAll<HTMLButtonElement>(".sort-button");
+    if (!container) return;
+
+    const applySort = (key: string, dir: "asc" | "desc") => {
+      const rows = Array.from(container.querySelectorAll<HTMLElement>(".book-row"));
+      const factor = dir === "asc" ? 1 : -1;
+
+      rows.sort((a, b) => {
+        if (key === "year") {
+          return (Number(a.dataset.year) - Number(b.dataset.year)) * factor;
+        }
+        const attr = key === "title" ? "title" : "author";
+        return a.dataset[attr]!.localeCompare(b.dataset[attr]!) * factor;
+      });
+
+      rows.forEach((row) => container.appendChild(row));
+
+      buttons.forEach((btn) => {
+        const isActive = btn.dataset.sort === key;
+        btn.classList.toggle("active", isActive);
+        btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+        const arrow = btn.querySelector(".sort-arrow");
+        if (arrow) arrow.textContent = isActive ? (dir === "asc" ? "↑" : "↓") : "";
+      });
+
+      widget.setAttribute("data-sort-key", key);
+      widget.setAttribute("data-sort-dir", dir);
+    };
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const key = button.dataset.sort!;
+        const currentKey = widget.getAttribute("data-sort-key");
+        const currentDir = widget.getAttribute("data-sort-dir");
+        const dir = key === currentKey && currentDir === "asc" ? "desc" : "asc";
+        applySort(key, dir);
+      });
+    });
+  }
+
+  document.querySelectorAll(".book-list-widget").forEach(initBookSort);
+</script>
+
 <style>
-  .book-rows {
-    margin: 1.2rem 0 2rem;
+  .sort-toolbar {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin: 0.5rem 0 0;
+  }
+
+  .sort-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    padding: 0.4em 0.85em;
+    border: 1px solid rgb(var(--surface-divider));
+    border-radius: 9999px;
+    background: var(--page-bg);
+    color: rgb(var(--text-muted));
+    font-family: inherit;
+    font-size: 0.72em;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .sort-button:hover {
+    background: rgb(var(--surface-elevated));
+    color: rgb(var(--text-primary));
+  }
+
+  .sort-button.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .sort-arrow {
+    font-size: 0.9em;
+  }
+
+  .book-rows {
+    margin: 0.6rem 0 2rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    column-gap: 2rem;
+  }
+
+  @media (min-width: 700px) {
+    .book-rows {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
   .book-row {

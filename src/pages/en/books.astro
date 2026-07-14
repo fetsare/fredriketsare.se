@@ -17,11 +17,15 @@ const { Content } = await render(entry);
     <Content />
   </section>
 
-  <BookRows items={entry.data.items} />
+  <BookRows items={entry.data.items} locale="en" />
 </BaseLayout>
 
 <style>
   .prose :global(:first-child) {
     margin-top: 0;
+  }
+
+  .prose :global(:last-child) {
+    margin-bottom: 0;
   }
 </style>
