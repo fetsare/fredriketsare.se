@@ -61,21 +61,4 @@ const books = defineCollection({
   }),
 });
 
-const booksEn = defineCollection({
-  loader: glob({ base: "./src/content/en/books", pattern: "**/*.md" }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string().optional(),
-    items: z.array(
-      z.object({
-        title: z.string(),
-        author: z.string(),
-        publishedYear: z.string().optional(),
-        cover: z.string(),
-        link: z.string().optional(),
-      }),
-    ).default([]),
-  }),
-});
-
-export const collections = { blog, blogEn, books, booksEn };
+export const collections = { blog, blogEn, books };

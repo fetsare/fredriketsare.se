@@ -2,14 +2,19 @@
 import { SITE_DESCRIPTION_EN } from "../../consts";
 import BlogPost from "../../components/BlogPost.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import BooksColumnList from "../../components/BooksColumnList.astro";
 import FormattedDate from "../../components/FormattedDate.astro";
-import { getCollection, render } from "astro:content";
+import { getCollection, getEntry, render } from "astro:content";
 
 const FULL_POSTS = 5;
+const RECENT_BOOKS_COUNT = 30;
 const posts = await getCollection("blogEn");
 const visiblePosts = posts.filter((post) => !post.data.draft);
 const fullPosts = visiblePosts.slice(0, FULL_POSTS);
 const previewPosts = visiblePosts.slice(FULL_POSTS);
+
+const booksEntry = await getEntry("books", "books");
+const recentBooks = booksEntry ? booksEntry.data.items.slice(-RECENT_BOOKS_COUNT).reverse() : [];
 ---
 
 <BaseLayout description={SITE_DESCRIPTION_EN} locale="en">
@@ -45,6 +50,14 @@ const previewPosts = visiblePosts.slice(FULL_POSTS);
           ))}
         </ul>
       </>
+    )
+  }
+
+  {
+    recentBooks.length > 0 && (
+      <Fragment slot="books-column">
+        <BooksColumnList items={recentBooks} locale="en" seeAllHref="/en/books" />
+      </Fragment>
     )
   }
 </BaseLayout>

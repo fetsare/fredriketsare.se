@@ -6,6 +6,7 @@ import num2kana from "../../assets/num2kana.mp4";
 import kiosk from "../../assets/kiosk.webp";
 import svd from "../../assets/systemvetardagen-se.webp";
 import ak from "../../assets/www-akademiskkvart-se.webp";
+import ff from "../../assets/foreverflashback.webp";
 
 type MediaSource = { src: string } | string;
 
@@ -70,6 +71,13 @@ const hasVideo = (project: Project): project is ProjectWithVideo =>
 
 const projects: Project[] = [
   {
+    title: "Forever Flashback",
+    description:
+      "A tribute to my favorite podcast [Flashback Forever](https://flashbackforever.se), built to show its creators a bit of gratitude. The audio is trimmed and normalized with [ffmpeg](https://ffmpeg.org/), transcribed with [KBLab's Whisper model](https://huggingface.co/KBLab/kb-whisper-large), and then run through [KBLab's NER model](https://huggingface.co/KBLab/bert-base-swedish-cased-ner) to pick out names, places, and other mentions in every episode. The text is then used to build a search index with Postgres's native [full text search](https://www.postgresql.org/docs/current/textsearch.html), along with statistics like mentions, volume levels, and other fun things I could dig up.",
+    image: ff,
+    href: "https://foreverflashback.se",
+  },
+  {
     title: "akademiskkvart.se",
     description:
       "I lead web development for Akademisk kvart, a secondary housing marketplace for students. I am responsible for the full project scope: AWS stack, frontend, SEO, and design. The work is done under [SSCO](https://ssco.se/).",
@@ -113,7 +121,7 @@ const projects: Project[] = [
 ];
 ---
 
-<BaseLayout description="Projects by Fredrik Etsare." locale="en">
+<BaseLayout description="Projects by Fredrik Etsare." locale="en" wide>
   <section>
     {
       projects.map((project, index) => (
@@ -184,5 +192,22 @@ const projects: Project[] = [
   .project-divider {
     border-top-color: rgb(var(--surface-divider));
     margin: 4rem 0;
+  }
+
+  @media (min-width: 721px) {
+    section {
+      column-count: 2;
+      column-gap: 3rem;
+      column-rule: 1px solid rgb(var(--surface-divider));
+    }
+
+    article {
+      break-inside: avoid;
+    }
+
+    .project-divider {
+      break-after: avoid;
+      break-before: avoid;
+    }
   }
 </style>

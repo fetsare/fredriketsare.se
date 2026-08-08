@@ -6,6 +6,7 @@ import num2kana from "../assets/num2kana.mp4";
 import kiosk from "../assets/kiosk.webp";
 import svd from "../assets/systemvetardagen-se.webp";
 import ak from "../assets/www-akademiskkvart-se.webp";
+import ff from "../assets/foreverflashback.webp";
 
 type MediaSource = { src: string } | string;
 
@@ -70,6 +71,13 @@ const hasVideo = (project: Project): project is ProjectWithVideo =>
 
 const projects: Project[] = [
   {
+    title: "Forever Flashback",
+    description:
+      "En hyllning till min favoritpodd [Flashback Forever](https://flashbackforever.se), byggd för att visa lite tacksamhet mot skaparna. Ljudet klipps och normaliseras med [ffmpeg](https://ffmpeg.org/), transkriberas med [KBLab:s Whisper-modell](https://huggingface.co/KBLab/kb-whisper-large) och körs sedan genom [KBLab:s NER-modell](https://huggingface.co/KBLab/bert-base-swedish-cased-ner) för att hitta namn, platser och andra omnämnanden i varje avsnitt. Texten används sedan för att bygga ett sökindex med Postgres inbyggda [full text search](https://www.postgresql.org/docs/current/textsearch.html), tillsammans med statistik som omnämnanden, volymnivåer och annat kul jag kunde gräva fram.",
+    image: ff,
+    href: "https://foreverflashback.se",
+  },
+  {
     title: "akademiskkvart.se",
     description:
       "IT-projektledare för vidareutvecklingen av Akademisk kvart, en andrahandsplattform för studentbostäder. Jag ansvarar för hela projektet: hela AWS stacken, frontend, SEO och design. Arbetet sker under [SSCO](https://ssco.se/).",
@@ -113,7 +121,7 @@ const projects: Project[] = [
 ];
 ---
 
-<BaseLayout description="Projekt av Fredrik Etsare.">
+<BaseLayout description="Projekt av Fredrik Etsare." wide>
   <section>
     {
       projects.map((project, index) => (
@@ -184,5 +192,22 @@ const projects: Project[] = [
   .project-divider {
     border-top-color: rgb(var(--surface-divider));
     margin: 4rem 0;
+  }
+
+  @media (min-width: 721px) {
+    section {
+      column-count: 2;
+      column-gap: 3rem;
+      column-rule: 1px solid rgb(var(--surface-divider));
+    }
+
+    article {
+      break-inside: avoid;
+    }
+
+    .project-divider {
+      break-after: avoid;
+      break-before: avoid;
+    }
   }
 </style>

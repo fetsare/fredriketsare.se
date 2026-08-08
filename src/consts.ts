@@ -8,6 +8,7 @@ export const NAV_LINKS = [
 	{ href: "/projekt", label: "Projekt", icon: "projects" },
 	{ href: "/mig", label: "Mig", icon: "about" },
 	{ href: "/books", label: "Böcker", icon: "books" },
+	{ href: "https://status.fredriketsare.se", label: "Status", icon: "status" },
 ] as const;
 
 export const NAV_LINKS_EN = [
@@ -15,4 +16,5 @@ export const NAV_LINKS_EN = [
 	{ href: "/en/projects", label: "Projects", icon: "projects" },
 	{ href: "/en/about", label: "About", icon: "about" },
 	{ href: "/en/books", label: "Books", icon: "books" },
+	{ href: "https://status.fredriketsare.se", label: "Status", icon: "status" },
 ] as const;

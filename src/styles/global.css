@@ -3,7 +3,7 @@
   --accent: #2337ff;
   --accent-dark: #000d8a;
   --black: 15, 18, 25;
-  --gray: 57, 86, 158;
+  --gray: 58, 112, 224;
   --gray-light: 229, 233, 240;
   --gray-dark: 236, 240, 248;
   --page-bg: #f5f7fb;
@@ -20,7 +20,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --gray: 96, 115, 159;
+    --gray: 108, 140, 214;
     --gray-dark: 34, 41, 57;
     --page-bg: #1a1a1a;
     --text-primary: 205, 205, 205;
@@ -143,7 +143,6 @@ hr {
 @media (max-width: 720px) {
   body {
     font-size: 18px;
-    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
   }
   main {
     padding: 1em;

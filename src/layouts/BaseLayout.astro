@@ -5,7 +5,6 @@ import { SITE_DESCRIPTION, SITE_DESCRIPTION_EN, SITE_TITLE } from "../consts";
 import BaseHead from "../components/BaseHead.astro";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
-import Navbar from "../components/Navbar.astro";
 import { getLocaleFromPathname, getLocalizedPath, type SiteLocale } from "../i18n";
 import {
   getUniqueSlug,
@@ -21,6 +20,7 @@ interface Props {
   canonicalPath?: string;
   metaType?: "website" | "article";
   publishedTime?: string;
+  wide?: boolean;
 }
 
 const {
@@ -31,6 +31,7 @@ const {
   canonicalPath,
   metaType,
   publishedTime,
+  wide = false,
 } = Astro.props;
 const locale = propLocale ?? getLocaleFromPathname(Astro.url.pathname);
 const currentPath = canonicalPath ?? Astro.url.pathname;
@@ -64,6 +65,8 @@ const featuredLinks = featuredSourcePosts
       href: `${featuredPathPrefix}${getUniqueSlug(seo.slug, usedFeaturedSlugs)}`,
     };
   });
+
+const hasBooksColumn = Astro.slots.has("books-column");
 ---
 
 <!doctype html>
@@ -82,8 +85,12 @@ const featuredLinks = featuredSourcePosts
   </head>
   <body>
     <Header locale={locale} />
-    <Navbar locale={locale} />
-    <main>
+    <main
+      class:list={[
+        "site-main",
+        { "site-main--two-col": hasBooksColumn, "site-main--wide": wide },
+      ]}
+    >
       <div class="layout-shell">
         {featuredLinks.length > 0 && (
           <aside class="featured-sidebar" data-featured-sidebar aria-label="Featured sidebar">
@@ -99,6 +106,15 @@ const featuredLinks = featuredSourcePosts
         <div class="layout-content">
           <slot />
         </div>
+
+        {hasBooksColumn && (
+          <aside
+            class="books-column"
+            aria-label={locale === "en" ? "Recent books" : "Senaste böckerna"}
+          >
+            <slot name="books-column" />
+          </aside>
+        )}
       </div>
     </main>
     <Footer locale={locale} />
@@ -114,10 +130,58 @@ const featuredLinks = featuredSourcePosts
     min-width: 0;
   }
 
+  .site-main--two-col {
+    width: auto;
+    max-width: calc(100% - 2em);
+  }
+
+  .site-main--wide {
+    width: 1100px;
+    max-width: calc(100% - 2em);
+  }
+
+  .site-main--two-col .layout-shell {
+    display: flex;
+    align-items: flex-start;
+    gap: 2.5rem;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .site-main--two-col .layout-content {
+    width: 720px;
+    max-width: 100%;
+    flex: 0 0 auto;
+  }
+
+  .books-column {
+    flex: 0 0 auto;
+    max-width: 280px;
+    min-width: 0;
+  }
+
+  @media (max-width: 720px) {
+    .site-main--two-col .layout-shell {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .site-main--two-col .layout-content,
+    .books-column {
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .books-column {
+      margin-top: 2.5rem;
+    }
+  }
+
   .featured-sidebar {
     position: fixed;
     top: var(--featured-sidebar-top, 0px);
-    left: calc(50% - 360px - 3rem - 220px);
+    left: calc(var(--featured-sidebar-blog-left, 50%) - 3rem - 220px);
     width: 220px;
     text-align: right;
     background: var(--page-bg);
@@ -160,19 +224,26 @@ const featuredLinks = featuredSourcePosts
 </style>
 
 <script is:inline>
-  function updateFeaturedSidebarTop() {
+  function updateFeaturedSidebarPosition() {
     const contentShell = document.querySelector(".layout-shell");
-    if (!contentShell) {
+    const blogColumn = contentShell?.querySelector(".layout-content");
+    if (!contentShell || !blogColumn) {
       return;
     }
 
     const shellTop = contentShell.getBoundingClientRect().top;
+    const blogLeft = blogColumn.getBoundingClientRect().left;
+
     document.documentElement.style.setProperty(
       "--featured-sidebar-top",
       `${Math.max(0, shellTop)}px`,
     );
+    document.documentElement.style.setProperty(
+      "--featured-sidebar-blog-left",
+      `${Math.max(0, blogLeft)}px`,
+    );
   }
 
-  window.addEventListener("load", updateFeaturedSidebarTop);
-  window.addEventListener("resize", updateFeaturedSidebarTop);
+  window.addEventListener("load", updateFeaturedSidebarPosition);
+  window.addEventListener("resize", updateFeaturedSidebarPosition);
 </script>

@@ -1,0 +1,141 @@
+---
+interface BookItem {
+  title: string;
+  author: string;
+  publishedYear?: string;
+  cover: string;
+  link?: string;
+}
+
+interface Props {
+  items: BookItem[];
+  seeAllHref: string;
+  locale?: "sv" | "en";
+  heading?: string;
+}
+
+const { items, seeAllHref, locale = "sv", heading } = Astro.props as Props;
+
+const toBookSearchUrl = (book: Pick<BookItem, "title" | "author">) => {
+  const query = `${book.title} ${book.author}`.trim().toLowerCase().replace(/\s+/g, "+");
+  return `https://isbndb.com/search/books/${encodeURIComponent(query)}`;
+};
+---
+
+<div class="books-widget">
+  <h2 class="books-widget-heading">
+    {heading ?? (locale === "en" ? "Recent books" : "Senaste böckerna")}
+  </h2>
+  <ul class="books-widget-list">
+    {
+      items.map((book) => (
+        <li>
+          <a
+            class="books-widget-row"
+            href={book.link ?? toBookSearchUrl(book)}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              class="books-widget-cover"
+              src={book.cover}
+              alt=""
+              loading="lazy"
+              width="32"
+              height="46"
+            />
+            <span class="books-widget-meta">
+              <span class="books-widget-title">{book.title}</span>
+              <span class="books-widget-author">{book.author}</span>
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+  <a class="books-widget-more" href={seeAllHref}>
+    {locale === "en" ? "See all books" : "Se alla böcker"} →
+  </a>
+</div>
+
+<style>
+  .books-widget {
+    width: 100%;
+  }
+
+  .books-widget-heading {
+    margin: 0 0 0.75rem;
+    font-size: 0.72rem;
+    line-height: 1.2;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgb(var(--text-muted));
+  }
+
+  .books-widget-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .books-widget-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .books-widget-cover {
+    width: 32px;
+    height: 46px;
+    object-fit: cover;
+    border-radius: 3px;
+    flex-shrink: 0;
+    display: block;
+  }
+
+  .books-widget-meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .books-widget-title {
+    font-size: 0.82em;
+    line-height: 1.2;
+    color: rgb(var(--text-primary));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .books-widget-row:hover .books-widget-title {
+    text-decoration: underline;
+  }
+
+  .books-widget-author {
+    font-size: 0.7em;
+    line-height: 1.15;
+    color: rgb(var(--text-muted));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .books-widget-more {
+    display: inline-block;
+    margin-top: 0.85rem;
+    font-size: 0.78em;
+    color: rgb(var(--text-muted));
+  }
+
+  .books-widget-more:hover {
+    color: rgb(var(--text-primary));
+    text-decoration: underline;
+  }
+</style>

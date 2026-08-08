@@ -1,12 +1,22 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import MigContent from "../content/mig.md";
+import SocialLinks from "../components/SocialLinks.astro";
+import type { SiteLocale } from "../i18n";
+
+const locale: SiteLocale = "sv";
 ---
 
-<BaseLayout description="Om Fredrik Etsare.">
+<BaseLayout description="Om Fredrik Etsare." locale={locale}>
   <section class="mig-content">
     <MigContent />
   </section>
+
+  <div class="mig-links">
+    <div class="social-links">
+      <SocialLinks locale={locale} />
+    </div>
+  </div>
 </BaseLayout>
 
 <style>
@@ -25,5 +35,21 @@ import MigContent from "../content/mig.md";
 
   .mig-content :global(p:last-of-type) {
     margin-bottom: 0;
+  }
+
+  .mig-links {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgb(var(--surface-divider));
+  }
+
+  .social-links {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
   }
 </style>

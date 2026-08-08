@@ -3,7 +3,8 @@ import type { GetStaticPaths } from "astro";
 import { SITE_DESCRIPTION_EN } from "../../consts";
 import BlogPost from "../../components/BlogPost.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getCollection, render, type CollectionEntry } from "astro:content";
+import BooksColumnList from "../../components/BooksColumnList.astro";
+import { getCollection, getEntry, render, type CollectionEntry } from "astro:content";
 
 type BlogEntry = CollectionEntry<"blogEn">;
 type PaginatedBlogPage = {
@@ -25,6 +26,10 @@ export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
 };
 
 const { page } = Astro.props as { page: PaginatedBlogPage };
+
+const RECENT_BOOKS_COUNT = 30;
+const booksEntry = await getEntry("books", "books");
+const recentBooks = booksEntry ? booksEntry.data.items.slice(-RECENT_BOOKS_COUNT).reverse() : [];
 ---
 
 <BaseLayout description={SITE_DESCRIPTION_EN} locale="en">
@@ -46,6 +51,14 @@ const { page } = Astro.props as { page: PaginatedBlogPage };
     {page.url.prev && <a href={page.url.prev} rel="prev">← Newer posts</a>}
     {page.url.next && <a href={page.url.next} rel="next">Older posts →</a>}
   </nav>
+
+  {
+    recentBooks.length > 0 && (
+      <Fragment slot="books-column">
+        <BooksColumnList items={recentBooks} locale="en" seeAllHref="/en/books" />
+      </Fragment>
+    )
+  }
 </BaseLayout>
 
 <style>
