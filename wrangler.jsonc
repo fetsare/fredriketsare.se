@@ -1,5 +1,6 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "fredriketsare-se",
-	"compatibility_date": "2026-04-15"
+	"compatibility_date": "2026-04-15",
+	"kv_namespaces": [{ "binding": "SESSION", "id": "19f7a2076b4a45389e06a9c9fe30ffdf" }]
 }
