@@ -120,7 +120,8 @@ export const GET: APIRoute = async () => {
 
 		return jsonResponse(toPayload(lastTrack, false), 200, true);
 	} catch (error) {
-		console.error('now-playing error', error);
+		const message = error instanceof Error ? error.message : String(error);
+		console.error(`now-playing error: ${message}`);
 		return jsonResponse(null, 502, false);
 	}
 };
