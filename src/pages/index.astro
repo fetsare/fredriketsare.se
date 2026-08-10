@@ -37,25 +37,19 @@ const recentBooks = booksEntry ? booksEntry.data.items.slice(-RECENT_BOOKS_COUNT
     previewPosts.length > 0 && (
       <>
         <hr class="blog-divider" />
-        <ul class="post-cards">
+        <ul class="post-list">
           {previewPosts.map((post) => (
             <li>
               <a
                 href={post.url}
-                class="post-card"
+                class="post-list-item"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <div class="post-card-body">
-                  <span class="post-card-title">{post.title}</span>
-                  <span class="post-card-date">
-                    <FormattedDate date={new Date(post.published_at)} locale="sv" />
-                  </span>
-                  {post.custom_excerpt && (
-                    <p class="post-card-excerpt">{post.custom_excerpt}</p>
-                  )}
-                </div>
-                <span class="post-card-arrow" aria-hidden="true">→</span>
+                <span class="post-list-title">{post.title}</span>
+                <span class="post-list-date">
+                  <FormattedDate date={new Date(post.published_at)} locale="sv" />
+                </span>
               </a>
             </li>
           ))}
@@ -76,76 +70,39 @@ const recentBooks = booksEntry ? booksEntry.data.items.slice(-RECENT_BOOKS_COUNT
 <style>
   .blog-divider {
     border-top-color: rgb(var(--surface-divider));
-    margin: 4rem 0;
+    margin: 2rem 0;
   }
 
-  .post-cards {
+  .post-list {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
   }
 
-  .post-card {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.85rem 1rem;
-    border: 1px solid rgb(var(--surface-divider));
-    border-radius: 8px;
-    background: rgb(var(--surface-elevated));
+  .post-list-item {
+    display: block;
+    padding: 0.4rem 0;
     text-decoration: none;
     color: inherit;
-    transition: border-color 0.15s, background 0.15s;
   }
 
-  .post-card:hover {
-    border-color: rgb(var(--gray));
-    background: rgb(var(--gray-light), 0.3);
-    color: inherit;
-  }
-
-  .post-card-body {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-  }
-
-  .post-card-title {
+  .post-list-title {
+    display: block;
+    font-size: 1.15em;
     font-weight: 700;
-    font-size: 0.95em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    line-height: 1.25;
+    margin-bottom: 0.15em;
   }
 
-  .post-card-date {
+  .post-list-item:hover .post-list-title {
+    text-decoration: underline;
+  }
+
+  .post-list-date {
+    display: block;
     font-size: 0.78em;
     color: rgb(var(--text-muted));
-  }
-
-  .post-card-excerpt {
-    margin: 0;
-    font-size: 0.82em;
-    color: rgb(var(--text-muted));
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .post-card-arrow {
-    flex-shrink: 0;
-    font-size: 1.1em;
-    color: rgb(var(--text-muted));
-    transition: transform 0.15s, color 0.15s;
-  }
-
-  .post-card:hover .post-card-arrow {
-    transform: translateX(3px);
-    color: rgb(var(--gray));
   }
 </style>
