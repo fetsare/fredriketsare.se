@@ -60,7 +60,8 @@ async function getAccessToken(spotifyEnv: SpotifyEnv): Promise<string> {
 	});
 
 	if (!response.ok) {
-		throw new Error(`Spotify token refresh failed: ${response.status}`);
+		const body = await response.text().catch(() => '');
+		throw new Error(`Spotify token refresh failed: ${response.status} ${body}`);
 	}
 
 	const data = (await response.json()) as { access_token: string; expires_in: number };
