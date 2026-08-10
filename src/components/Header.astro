@@ -1,25 +1,13 @@
 ---
 import AvatarImage from "../assets/fredrik.webp";
 import HeaderLink from "./HeaderLink.astro";
-import { getMainNavLinks, type SiteLocale } from "../i18n";
-
-type NavLink = {
-  href: string;
-  label: string;
-  icon: string;
-};
-
-const locale: SiteLocale = Astro.props.locale ?? "sv";
-const homePath = locale === "en" ? "/en" : "/";
-const navLinks = getMainNavLinks(locale) as readonly NavLink[];
-const menuLabel = locale === "en" ? "Menu" : "Meny";
-const navAriaLabel = locale === "en" ? "Main navigation" : "Huvudnavigering";
+import { NAV_LINKS } from "../consts";
 ---
 
 <header>
   <div class="header-inner">
     <h2>
-      <a href={homePath}>
+      <a href="/">
         <img
           class="avatar"
           src={AvatarImage.src}
@@ -38,7 +26,7 @@ const navAriaLabel = locale === "en" ? "Main navigation" : "Huvudnavigering";
         aria-haspopup="true"
         aria-expanded="false"
       >
-        <span>{menuLabel}</span>
+        <span>Meny</span>
         <svg
           class="nav-menu-chevron"
           xmlns="http://www.w3.org/2000/svg"
@@ -56,10 +44,10 @@ const navAriaLabel = locale === "en" ? "Main navigation" : "Huvudnavigering";
         </svg>
       </button>
 
-      <nav class="nav-menu-panel" aria-label={navAriaLabel}>
+      <nav class="nav-menu-panel" aria-label="Huvudnavigering">
         <ul>
           {
-            navLinks.map((link) => {
+            NAV_LINKS.map((link) => {
               const isExternal = link.href.startsWith("http");
               return (
                 <li>

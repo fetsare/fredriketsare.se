@@ -45,3 +45,46 @@ export async function getAllPosts(locale?: 'sv' | 'en'): Promise<GhostPost[]> {
 export async function getPostBySlug(slug: string): Promise<GhostPost> {
   return api.posts.read({ slug }, { include: ['tags'] }) as unknown as GhostPost;
 }
+
+export interface GalleryResult {
+  images: string[];
+  url: string;
+}
+
+export async function getLatestGallery(): Promise<GalleryResult | null> {
+  try {
+    const page = await api.pages.read(
+      { slug: 'bilder' },
+      {},
+    ) as unknown as { html: string; url: string };
+    const images = extractFirstGalleryImages(page.html);
+    return images.length > 0 ? { images, url: page.url } : null;
+  } catch {
+    return null;
+  }
+}
+
+function toThumbnailUrl(url: string): string {
+  return url.replace('/content/images/', '/content/images/size/w600/');
+}
+
+function extractFirstGalleryImages(html: string): string[] {
+  const markerIdx = html.indexOf('kg-gallery-card');
+  if (markerIdx === -1) return [];
+
+  const figStart = html.lastIndexOf('<figure', markerIdx);
+  if (figStart === -1) return [];
+
+  const figEnd = html.indexOf('</figure>', markerIdx);
+  if (figEnd === -1) return [];
+
+  const galleryHtml = html.slice(figStart, figEnd + 9);
+
+  const images: string[] = [];
+  const srcRe = /\bsrc="([^"]+)"/g;
+  let m;
+  while ((m = srcRe.exec(galleryHtml)) !== null) {
+    images.push(toThumbnailUrl(m[1]));
+  }
+  return images.slice(0, 9);
+}

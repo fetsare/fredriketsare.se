@@ -2,35 +2,25 @@
 import "../styles/global.css";
 import type { ImageMetadata } from "astro";
 import FallbackImage from "../assets/me.webp";
-import type { SiteLocale } from "../i18n";
 
 interface Props {
   title: string;
   description: string;
   image?: ImageMetadata;
-  locale: SiteLocale;
   canonicalPath: string;
   metaType?: "website" | "article";
   publishedTime?: string;
-  alternateUrls: {
-    sv: URL;
-    en: URL;
-  };
 }
 
 const {
   title,
   description,
   image = FallbackImage,
-  locale,
-  alternateUrls,
   canonicalPath,
   metaType = "website",
   publishedTime,
 } = Astro.props;
 const canonicalURL = new URL(canonicalPath, Astro.site);
-const ogLocale = locale === "sv" ? "sv_SE" : "en_US";
-const alternateOgLocale = locale === "sv" ? "en_US" : "sv_SE";
 ---
 
 <meta charset="utf-8" />
@@ -51,9 +41,6 @@ const alternateOgLocale = locale === "sv" ? "en_US" : "sv_SE";
 />
 
 <link rel="canonical" href={canonicalURL} />
-<link rel="alternate" hreflang="sv" href={alternateUrls.sv} />
-<link rel="alternate" hreflang="en" href={alternateUrls.en} />
-<link rel="alternate" hreflang="x-default" href={alternateUrls.sv} />
 
 <title>{title}</title>
 <meta name="title" content={title} />
@@ -62,8 +49,7 @@ const alternateOgLocale = locale === "sv" ? "en_US" : "sv_SE";
 
 <meta property="og:type" content={metaType} />
 <meta property="og:url" content={canonicalURL} />
-<meta property="og:locale" content={ogLocale} />
-<meta property="og:locale:alternate" content={alternateOgLocale} />
+<meta property="og:locale" content="sv_SE" />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={new URL(image.src, Astro.url)} />

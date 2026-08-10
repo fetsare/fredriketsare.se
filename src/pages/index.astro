@@ -5,12 +5,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import BooksColumnList from "../components/BooksColumnList.astro";
 import FormattedDate from "../components/FormattedDate.astro";
 import { getEntry } from "astro:content";
-import { getAllPosts } from "../lib/ghost";
+import { getAllPosts, getLatestGallery } from "../lib/ghost";
+import PhotoGallery from "../components/PhotoGallery.astro";
 
 const RECENT_BOOKS_COUNT = 30;
-const posts = await getAllPosts('sv');
-const fullPosts = posts.slice(0, 2);
-const previewPosts = posts.slice(2, 12);
+const [posts, gallery] = await Promise.all([getAllPosts('sv'), getLatestGallery()]);
+const fullPosts = posts.slice(0, 1);
+const previewPosts = posts.slice(1, 4);
 
 const booksEntry = await getEntry("books", "books");
 const recentBooks = booksEntry ? booksEntry.data.items.slice(-RECENT_BOOKS_COUNT).reverse() : [];
@@ -58,6 +59,24 @@ const recentBooks = booksEntry ? booksEntry.data.items.slice(-RECENT_BOOKS_COUNT
     )
   }
 
+  {previewPosts.length > 0 && (
+    <a
+      href="https://blog.fredriketsare.se"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="see-all-posts"
+    >
+      Se alla inlägg →
+    </a>
+  )}
+
+  {gallery && (
+    <>
+      <hr class="blog-divider" />
+      <PhotoGallery images={gallery.images} href={gallery.url} />
+    </>
+  )}
+
   {
     recentBooks.length > 0 && (
       <Fragment slot="books-column">
@@ -104,5 +123,18 @@ const recentBooks = booksEntry ? booksEntry.data.items.slice(-RECENT_BOOKS_COUNT
     display: block;
     font-size: 0.78em;
     color: rgb(var(--text-muted));
+  }
+
+  .see-all-posts {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-size: 0.85em;
+    color: rgb(var(--gray));
+    text-decoration: none;
+  }
+
+  .see-all-posts:hover {
+    color: rgb(var(--text-primary));
+    text-decoration: underline;
   }
 </style>

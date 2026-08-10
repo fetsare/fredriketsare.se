@@ -1,17 +1,15 @@
 ---
 import type { ImageMetadata } from "astro";
-import { SITE_DESCRIPTION, SITE_DESCRIPTION_EN, SITE_TITLE } from "../consts";
+import { SITE_TITLE } from "../consts";
 import BaseHead from "../components/BaseHead.astro";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
-import { getLocaleFromPathname, getLocalizedPath, type SiteLocale } from "../i18n";
 import { getAllPosts } from "../lib/ghost";
 
 interface Props {
   title?: string;
   description: string;
   image?: ImageMetadata;
-  locale?: SiteLocale;
   canonicalPath?: string;
   metaType?: "website" | "article";
   publishedTime?: string;
@@ -22,51 +20,38 @@ const {
   title = SITE_TITLE,
   description,
   image,
-  locale: propLocale,
   canonicalPath,
   metaType,
   publishedTime,
   wide = false,
 } = Astro.props;
-const locale = propLocale ?? getLocaleFromPathname(Astro.url.pathname);
 const currentPath = canonicalPath ?? Astro.url.pathname;
 
-const alternateUrls = {
-  sv: new URL(getLocalizedPath(currentPath, "sv"), Astro.site),
-  en: new URL(getLocalizedPath(currentPath, "en"), Astro.site),
-};
-
-const ghostLocale = locale === "en" ? "en" : "sv";
-const featuredTitle = locale === "en" ? "Featured posts" : "Utvalda inlagg";
-const featuredPathPrefix = locale === "en" ? "/en/featured/" : "/featured/";
-
-const allPosts = await getAllPosts(ghostLocale);
+const allPosts = await getAllPosts('sv');
 const featuredLinks = allPosts
   .filter((post) => post.featured)
   .map((post) => ({
     title: post.title,
-    href: `${featuredPathPrefix}${post.slug}`,
+    href: `/featured/${post.slug}`,
   }));
 
 const hasBooksColumn = Astro.slots.has("books-column");
 ---
 
 <!doctype html>
-<html lang={locale}>
+<html lang="sv">
   <head>
     <BaseHead
       title={title}
       description={description}
       image={image}
-      locale={locale}
-      alternateUrls={alternateUrls}
       canonicalPath={currentPath}
       metaType={metaType}
       publishedTime={publishedTime}
     />
   </head>
   <body>
-    <Header locale={locale} />
+    <Header />
     <main
       class:list={[
         "site-main",
@@ -76,7 +61,7 @@ const hasBooksColumn = Astro.slots.has("books-column");
       <div class="layout-shell">
         {featuredLinks.length > 0 && (
           <aside class="featured-sidebar" data-featured-sidebar aria-label="Featured sidebar">
-            <h2>{featuredTitle}</h2>
+            <h2>Utvalda inlägg</h2>
             <ul>
               {featuredLinks.map((featuredPost) => (
                 <li><a href={featuredPost.href}>{featuredPost.title}</a></li>
@@ -90,16 +75,13 @@ const hasBooksColumn = Astro.slots.has("books-column");
         </div>
 
         {hasBooksColumn && (
-          <aside
-            class="books-column"
-            aria-label={locale === "en" ? "Recent books" : "Senaste böckerna"}
-          >
+          <aside class="books-column" aria-label="Senaste böckerna">
             <slot name="books-column" />
           </aside>
         )}
       </div>
     </main>
-    <Footer locale={locale} />
+    <Footer />
   </body>
 </html>
 

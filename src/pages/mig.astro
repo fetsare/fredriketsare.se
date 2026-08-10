@@ -2,19 +2,16 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import MigContent from "../content/mig.md";
 import SocialLinks from "../components/SocialLinks.astro";
-import type { SiteLocale } from "../i18n";
-
-const locale: SiteLocale = "sv";
 ---
 
-<BaseLayout description="Om Fredrik Etsare." locale={locale}>
+<BaseLayout description="Om Fredrik Etsare.">
   <section class="mig-content">
     <MigContent />
   </section>
 
   <div class="mig-links">
     <div class="social-links">
-      <SocialLinks locale={locale} />
+      <SocialLinks />
     </div>
   </div>
 </BaseLayout>

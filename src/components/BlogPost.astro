@@ -9,7 +9,6 @@ interface Props {
 }
 
 const { pubDate, title, featureImage, featureImageAlt } = Astro.props;
-const locale = Astro.url.pathname.startsWith("/en") ? "en" : "sv";
 ---
 
 <style>
@@ -37,7 +36,7 @@ const locale = Astro.url.pathname.startsWith("/en") ? "en" : "sv";
     )}
     {title && <h2 class="post-title">{title}</h2>}
     <div class="date">
-      <FormattedDate date={new Date(pubDate)} locale={locale} />
+      <FormattedDate date={new Date(pubDate)} locale="sv" />
     </div>
     <slot />
   </div>

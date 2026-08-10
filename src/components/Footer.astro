@@ -1,24 +1,15 @@
 ---
 import SocialLinks from "./SocialLinks.astro";
-import { getMainNavLinks, type SiteLocale } from "../i18n";
+import { NAV_LINKS } from "../consts";
 
 const today = new Date();
-const locale: SiteLocale = Astro.props.locale ?? "sv";
-const navLinks = getMainNavLinks(locale);
-const copyrightText =
-  locale === "en"
-    ? `© ${today.getFullYear()} Fredrik Etsare.`
-    : `© ${today.getFullYear()} Fredrik Etsare.`;
 ---
 
 <footer>
   <div class="footer-inner">
-    <div
-      class="internal-links"
-      aria-label={locale === "en" ? "Footer navigation" : "Sidfotsnavigering"}
-    >
+    <div class="internal-links" aria-label="Sidfotsnavigering">
       {
-        navLinks.map((link) => {
+        NAV_LINKS.map((link) => {
           const isExternal = link.href.startsWith("http");
           return (
             <a
@@ -34,10 +25,10 @@ const copyrightText =
     </div>
 
     <div class="social-links">
-      <SocialLinks locale={locale} />
+      <SocialLinks />
     </div>
 
-    <p class="copyright">{copyrightText}</p>
+    <p class="copyright">© {today.getFullYear()} Fredrik Etsare.</p>
   </div>
 </footer>
 <style>
