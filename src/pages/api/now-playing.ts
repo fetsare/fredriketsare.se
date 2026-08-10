@@ -32,7 +32,20 @@ interface NowPlayingPayload {
 	url: string;
 }
 
+interface CachedToken {
+	accessToken: string;
+	expiresAt: number;
+}
+
+// Persists across requests handled by the same Worker isolate, so most polls
+// reuse it instead of hitting Spotify's token endpoint every 30s.
+let cachedToken: CachedToken | null = null;
+
 async function getAccessToken(spotifyEnv: SpotifyEnv): Promise<string> {
+	if (cachedToken && cachedToken.expiresAt > Date.now()) {
+		return cachedToken.accessToken;
+	}
+
 	const basicAuth = btoa(`${spotifyEnv.SPOTIFY_CLIENT_ID}:${spotifyEnv.SPOTIFY_CLIENT_SECRET}`);
 	const response = await fetch(TOKEN_URL, {
 		method: 'POST',
@@ -50,8 +63,13 @@ async function getAccessToken(spotifyEnv: SpotifyEnv): Promise<string> {
 		throw new Error(`Spotify token refresh failed: ${response.status}`);
 	}
 
-	const data = (await response.json()) as { access_token: string };
-	return data.access_token;
+	const data = (await response.json()) as { access_token: string; expires_in: number };
+	cachedToken = {
+		accessToken: data.access_token,
+		expiresAt: Date.now() + (data.expires_in - 60) * 1000,
+	};
+
+	return cachedToken.accessToken;
 }
 
 function toPayload(track: SpotifyTrack, isPlaying: boolean): NowPlayingPayload {
