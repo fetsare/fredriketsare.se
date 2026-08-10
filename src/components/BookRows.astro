@@ -53,14 +53,12 @@ const sortedItems = [...items]
             rel="noopener noreferrer"
             aria-label={`Öppna ${book.title}`}
           >
-            <span class="book-cover-wrap">
-              <img
-                class="book-cover"
-                src={book.cover}
-                alt={`Omslag: ${book.title}`}
-                loading="lazy"
-              />
-            </span>
+            <img
+              class="book-cover"
+              src={book.cover}
+              alt={`Omslag: ${book.title}`}
+              loading="lazy"
+            />
 
             <div class="book-meta">
               <span class="book-title">{book.title}</span>
@@ -268,27 +266,13 @@ const sortedItems = [...items]
     border-bottom: 0;
   }
 
-  .book-cover-wrap {
-    position: relative;
-    display: block;
-    width: 44px;
-    height: 62px;
-    border-radius: 4px;
-    box-shadow: 0 0 14px 3px rgba(255, 255, 255, 0.55);
-  }
-
-  .book-cover-wrap .book-cover {
-    width: 100%;
-    height: 100%;
-  }
-
   .book-badge {
     order: -1;
     font-size: 0.68em;
     font-weight: 600;
     letter-spacing: 0.03em;
     text-transform: uppercase;
-    color: var(--accent);
+    color: #ffb020;
     line-height: 1.3;
   }
 
