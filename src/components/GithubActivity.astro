@@ -1,0 +1,200 @@
+---
+---
+
+<div class="github-activity" data-github-activity hidden>
+  <h2 class="github-activity-heading">Senast på GitHub</h2>
+  <a class="github-activity-row" data-github-activity-link href="#" target="_blank" rel="noopener noreferrer">
+    <span class="github-activity-meta">
+      <span class="github-activity-title" data-github-activity-title></span>
+      <span class="github-activity-time" data-github-activity-time></span>
+    </span>
+  </a>
+</div>
+
+<style>
+  .github-activity {
+    width: 100%;
+    margin-bottom: 1.1rem;
+  }
+
+  .github-activity-heading {
+    margin: 0 0 0.75rem;
+    font-size: 0.72rem;
+    line-height: 1.2;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgb(var(--text-muted));
+  }
+
+  .github-activity-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .github-activity-meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .github-activity-title {
+    font-size: 0.82em;
+    line-height: 1.3;
+    color: rgb(var(--text-primary));
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
+  .github-activity-row:hover .github-activity-title {
+    text-decoration: underline;
+  }
+
+  .github-activity-time {
+    font-size: 0.7em;
+    line-height: 1.15;
+    color: rgb(var(--text-muted));
+  }
+</style>
+
+<script>
+  const GITHUB_USERNAME = 'fetsare';
+  const EVENTS_URL = `https://api.github.com/users/${GITHUB_USERNAME}/events/public`;
+  const CACHE_KEY = 'github-activity-cache-v2';
+  const CACHE_TTL_MS = 5 * 60 * 1000;
+
+  interface GithubEvent {
+    type: string;
+    repo: { name: string };
+    created_at: string;
+    payload: {
+      action?: string;
+      ref_type?: string;
+      ref?: string;
+    };
+  }
+
+  interface ActivityItem {
+    text: string;
+    url: string;
+    createdAt: string;
+  }
+
+  function describeEvent(event: GithubEvent): ActivityItem | null {
+    const repo = event.repo.name;
+    const repoUrl = `https://github.com/${repo}`;
+
+    switch (event.type) {
+      case 'PushEvent': {
+        const branch = event.payload.ref?.replace('refs/heads/', '');
+        const branchLabel = branch && branch !== 'main' && branch !== 'master' ? ` (${branch})` : '';
+        return { text: `Push till ${repo}${branchLabel}`, url: repoUrl, createdAt: event.created_at };
+      }
+      case 'CreateEvent': {
+        if (event.payload.ref_type === 'repository') {
+          return { text: `Skapade repot ${repo}`, url: repoUrl, createdAt: event.created_at };
+        }
+        if (event.payload.ref_type === 'branch') {
+          return { text: `Skapade branchen ${event.payload.ref} i ${repo}`, url: repoUrl, createdAt: event.created_at };
+        }
+        return null;
+      }
+      case 'PullRequestEvent': {
+        const action = event.payload.action === 'closed' ? 'Stängde' : 'Öppnade';
+        return { text: `${action} en pull request i ${repo}`, url: repoUrl, createdAt: event.created_at };
+      }
+      case 'IssuesEvent': {
+        const action = event.payload.action === 'closed' ? 'Stängde' : 'Öppnade';
+        return { text: `${action} ett issue i ${repo}`, url: repoUrl, createdAt: event.created_at };
+      }
+      case 'WatchEvent':
+        return { text: `Stjärnmärkte ${repo}`, url: repoUrl, createdAt: event.created_at };
+      case 'ForkEvent':
+        return { text: `Forkade ${repo}`, url: repoUrl, createdAt: event.created_at };
+      case 'ReleaseEvent':
+        return { text: `Publicerade en release i ${repo}`, url: repoUrl, createdAt: event.created_at };
+      default:
+        return null;
+    }
+  }
+
+  function formatRelativeTime(isoDate: string): string {
+    const diffMs = Date.now() - new Date(isoDate).getTime();
+    const diffMinutes = Math.round(diffMs / 60000);
+    if (diffMinutes < 60) return `${Math.max(diffMinutes, 0)} min sedan`;
+    const diffHours = Math.round(diffMinutes / 60);
+    if (diffHours < 24) return `${diffHours} tim sedan`;
+    const diffDays = Math.round(diffHours / 24);
+    if (diffDays < 30) return `${diffDays} dagar sedan`;
+    const diffMonths = Math.round(diffDays / 30);
+    return `${diffMonths} mån sedan`;
+  }
+
+  function readCache(): ActivityItem | null {
+    try {
+      const raw = sessionStorage.getItem(CACHE_KEY);
+      if (!raw) return null;
+      const { item, cachedAt } = JSON.parse(raw) as { item: ActivityItem; cachedAt: number };
+      if (Date.now() - cachedAt > CACHE_TTL_MS) return null;
+      return item;
+    } catch {
+      return null;
+    }
+  }
+
+  function writeCache(item: ActivityItem) {
+    try {
+      sessionStorage.setItem(CACHE_KEY, JSON.stringify({ item, cachedAt: Date.now() }));
+    } catch {
+      // sessionStorage unavailable (private mode, etc.) - fine to skip caching
+    }
+  }
+
+  function render(container: HTMLDivElement, item: ActivityItem) {
+    const link = container.querySelector<HTMLAnchorElement>('[data-github-activity-link]');
+    const title = container.querySelector<HTMLSpanElement>('[data-github-activity-title]');
+    const time = container.querySelector<HTMLSpanElement>('[data-github-activity-time]');
+    if (!link || !title || !time) return;
+
+    link.href = item.url;
+    title.textContent = item.text;
+    time.textContent = formatRelativeTime(item.createdAt);
+    container.hidden = false;
+  }
+
+  async function updateGithubActivity() {
+    const container = document.querySelector<HTMLDivElement>('[data-github-activity]');
+    if (!container) return;
+
+    const cached = readCache();
+    if (cached) {
+      render(container, cached);
+      return;
+    }
+
+    try {
+      const response = await fetch(EVENTS_URL, {
+        headers: { Accept: 'application/vnd.github+json' },
+      });
+      if (!response.ok) throw new Error(`Unexpected status ${response.status}`);
+
+      const events: GithubEvent[] = await response.json();
+      const item = events.map(describeEvent).find((event): event is ActivityItem => event !== null);
+      if (!item) {
+        container.hidden = true;
+        return;
+      }
+
+      writeCache(item);
+      render(container, item);
+    } catch {
+      container.hidden = true;
+    }
+  }
+
+  updateGithubActivity();
+</script>

@@ -5,6 +5,7 @@ interface BookItem {
   publishedYear?: string;
   cover: string;
   link?: string;
+  currentlyReading?: boolean;
 }
 
 interface Props {
@@ -22,8 +23,8 @@ const toBookSearchUrl = (book: Pick<BookItem, "title" | "author">) => {
 
 const t =
   locale === "en"
-    ? { sortLabel: "Sort books", title: "Title", author: "Author", year: "Year" }
-    : { sortLabel: "Sortera böcker", title: "Titel", author: "Författare", year: "År" };
+    ? { sortLabel: "Sort books", title: "Title", author: "Author", year: "Year", readingNow: "reading now" }
+    : { sortLabel: "Sortera böcker", title: "Titel", author: "Författare", year: "År", readingNow: "läser nu" };
 
 const sortButtons = [
   { key: "author", label: t.author },
@@ -31,13 +32,52 @@ const sortButtons = [
   { key: "year", label: t.year },
 ] as const;
 
-const sortedItems = [...items].sort((a, b) =>
-  a.author.localeCompare(b.author, locale, { sensitivity: "base" }),
-);
+const currentlyReadingItems = items.filter((book) => book.currentlyReading);
+
+const sortedItems = [...items]
+  .filter((book) => !book.currentlyReading)
+  .sort((a, b) => a.author.localeCompare(b.author, locale, { sensitivity: "base" }));
 ---
 
 {
-  sortedItems.length > 0 ? (
+  currentlyReadingItems.length > 0 && (
+    <div class="currently-reading" role="list" aria-label={t.readingNow}>
+      {currentlyReadingItems.map((book) => {
+        const searchUrl = toBookSearchUrl(book);
+        return (
+          <a
+            class="book-row book-row--reading-now"
+            role="listitem"
+            href={book.link ?? searchUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Öppna ${book.title}`}
+          >
+            <span class="book-cover-wrap">
+              <img
+                class="book-cover"
+                src={book.cover}
+                alt={`Omslag: ${book.title}`}
+                loading="lazy"
+              />
+            </span>
+
+            <div class="book-meta">
+              <span class="book-title">{book.title}</span>
+              <span class="book-author">{book.author}</span>
+              <span class="book-badge">{t.readingNow}</span>
+            </div>
+
+            <span class="book-chevron" aria-hidden="true">›</span>
+          </a>
+        );
+      })}
+    </div>
+  )
+}
+
+{
+  items.length > 0 ? (
     <div class="book-list-widget" data-locale={locale} data-sort-key="author" data-sort-dir="asc">
       <div class="sort-toolbar" role="group" aria-label={t.sortLabel}>
         {sortButtons.map((btn) => (
@@ -218,6 +258,38 @@ const sortedItems = [...items].sort((a, b) =>
 
   .book-row:last-child {
     border-bottom: 0;
+  }
+
+  .currently-reading {
+    margin: 0.6rem 0 1.5rem;
+  }
+
+  .book-row--reading-now {
+    border-bottom: 0;
+  }
+
+  .book-cover-wrap {
+    position: relative;
+    display: block;
+    width: 44px;
+    height: 62px;
+    border-radius: 4px;
+    box-shadow: 0 0 14px 3px rgba(255, 255, 255, 0.55);
+  }
+
+  .book-cover-wrap .book-cover {
+    width: 100%;
+    height: 100%;
+  }
+
+  .book-badge {
+    order: -1;
+    font-size: 0.68em;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--accent);
+    line-height: 1.3;
   }
 
   .book-cover {

@@ -1,6 +1,7 @@
 ---
 import AvatarImage from "../assets/fredrik.webp";
 import HeaderLink from "./HeaderLink.astro";
+import SocialLinks from "./SocialLinks.astro";
 import { NAV_LINKS } from "../consts";
 ---
 
@@ -19,52 +20,58 @@ import { NAV_LINKS } from "../consts";
       </a>
     </h2>
 
-    <div class="nav-menu">
-      <button
-        type="button"
-        class="nav-menu-trigger"
-        aria-haspopup="true"
-        aria-expanded="false"
-      >
-        <span>Meny</span>
-        <svg
-          class="nav-menu-chevron"
-          xmlns="http://www.w3.org/2000/svg"
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
-      </button>
+    <div class="header-actions">
+      <div class="header-social-links">
+        <SocialLinks />
+      </div>
 
-      <nav class="nav-menu-panel" aria-label="Huvudnavigering">
-        <ul>
-          {
-            NAV_LINKS.map((link) => {
-              const isExternal = link.href.startsWith("http");
-              return (
-                <li>
-                  <HeaderLink
-                    class="nav-menu-link"
-                    href={link.href}
-                    target={isExternal ? "_blank" : undefined}
-                    rel={isExternal ? "noopener noreferrer" : undefined}
-                  >
-                    {link.label}
-                  </HeaderLink>
-                </li>
-              );
-            })
-          }
-        </ul>
-      </nav>
+      <div class="nav-menu">
+        <button
+          type="button"
+          class="nav-menu-trigger"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          <span>Meny</span>
+          <svg
+            class="nav-menu-chevron"
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
+        <nav class="nav-menu-panel" aria-label="Huvudnavigering">
+          <ul>
+            {
+              NAV_LINKS.map((link) => {
+                const isExternal = link.href.startsWith("http");
+                return (
+                  <li>
+                    <HeaderLink
+                      class="nav-menu-link"
+                      href={link.href}
+                      target={isExternal ? "_blank" : undefined}
+                      rel={isExternal ? "noopener noreferrer" : undefined}
+                    >
+                      {link.label}
+                    </HeaderLink>
+                  </li>
+                );
+              })
+            }
+          </ul>
+        </nav>
+      </div>
     </div>
   </div>
 </header>
@@ -78,7 +85,7 @@ import { NAV_LINKS } from "../consts";
   }
 
   .header-inner {
-    width: 720px;
+    width: 900px;
     max-width: calc(100% - 2em);
     margin: auto;
     display: flex;
@@ -108,6 +115,24 @@ import { NAV_LINKS } from "../consts";
     margin-right: 0.5em;
     object-fit: cover;
     display: block;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+  }
+
+  .header-social-links {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  @media (max-width: 640px) {
+    .header-social-links {
+      display: none;
+    }
   }
 
   .nav-menu {

@@ -14,6 +14,7 @@ const books = defineCollection({
         publishedYear: z.string().optional(),
         cover: z.string(),
         link: z.string().optional(),
+        currentlyReading: z.boolean().optional(),
       }),
     ).default([]),
   }),

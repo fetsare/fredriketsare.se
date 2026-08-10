@@ -82,6 +82,7 @@ items:
     author: "Fredrik Backman"
     publishedYear: "2025"
     cover: /images/books/mina-vanner.jpg
+    currentlyReading: true
 ---
 
 Här är lite böcker jag läst som jag tycker du bör läsa.

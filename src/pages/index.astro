@@ -4,6 +4,8 @@ import BlogPost from "../components/BlogPost.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import BooksColumnList from "../components/BooksColumnList.astro";
 import FormattedDate from "../components/FormattedDate.astro";
+import NowPlaying from "../components/NowPlaying.astro";
+import GithubActivity from "../components/GithubActivity.astro";
 import { getEntry } from "astro:content";
 import { getAllPosts, getLatestGallery } from "../lib/ghost";
 import PhotoGallery from "../components/PhotoGallery.astro";
@@ -80,6 +82,8 @@ const recentBooks = booksEntry ? booksEntry.data.items.slice(-RECENT_BOOKS_COUNT
   {
     recentBooks.length > 0 && (
       <Fragment slot="books-column">
+        <NowPlaying />
+        <GithubActivity />
         <BooksColumnList items={recentBooks} locale="sv" seeAllHref="/books" />
       </Fragment>
     )

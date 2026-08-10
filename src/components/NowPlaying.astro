@@ -1,0 +1,158 @@
+---
+---
+
+<div class="now-playing" data-now-playing hidden>
+  <h2 class="now-playing-heading" data-now-playing-heading>Lyssnar på</h2>
+  <a class="now-playing-row" data-now-playing-link href="#" target="_blank" rel="noopener noreferrer">
+    <img class="now-playing-cover" data-now-playing-cover src="" alt="" width="32" height="32" />
+    <span class="now-playing-meta">
+      <span class="now-playing-title" data-now-playing-title></span>
+      <span class="now-playing-artist" data-now-playing-artist></span>
+    </span>
+    <span class="now-playing-dot" data-now-playing-dot aria-hidden="true"></span>
+  </a>
+</div>
+
+<style>
+  .now-playing {
+    width: 100%;
+    margin-bottom: 1.1rem;
+  }
+
+  .now-playing-heading {
+    margin: 0 0 0.75rem;
+    font-size: 0.72rem;
+    line-height: 1.2;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgb(var(--text-muted));
+  }
+
+  .now-playing-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .now-playing-cover {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: 3px;
+    flex-shrink: 0;
+    display: block;
+  }
+
+  .now-playing-meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .now-playing-title {
+    font-size: 0.82em;
+    line-height: 1.2;
+    color: rgb(var(--text-primary));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .now-playing-row:hover .now-playing-title {
+    text-decoration: underline;
+  }
+
+  .now-playing-artist {
+    font-size: 0.7em;
+    line-height: 1.15;
+    color: rgb(var(--text-muted));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .now-playing-dot {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgb(var(--gray));
+    display: none;
+  }
+
+  .now-playing[data-is-playing] .now-playing-dot {
+    display: block;
+    animation: now-playing-pulse 1.6s ease-in-out infinite;
+  }
+
+  @keyframes now-playing-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.25;
+    }
+  }
+</style>
+
+<script>
+  const POLL_INTERVAL_MS = 30000;
+
+  interface NowPlayingPayload {
+    isPlaying: boolean;
+    title: string;
+    artist: string;
+    albumArt: string | null;
+    url: string;
+  }
+
+  async function updateNowPlaying() {
+    const container = document.querySelector<HTMLDivElement>('[data-now-playing]');
+    if (!container) return;
+
+    try {
+      const response = await fetch('/api/now-playing');
+      if (!response.ok) throw new Error(`Unexpected status ${response.status}`);
+
+      const payload: NowPlayingPayload | null = await response.json();
+      if (!payload) {
+        container.hidden = true;
+        return;
+      }
+
+      const heading = container.querySelector<HTMLHeadingElement>('[data-now-playing-heading]');
+      const link = container.querySelector<HTMLAnchorElement>('[data-now-playing-link]');
+      const cover = container.querySelector<HTMLImageElement>('[data-now-playing-cover]');
+      const title = container.querySelector<HTMLSpanElement>('[data-now-playing-title]');
+      const artist = container.querySelector<HTMLSpanElement>('[data-now-playing-artist]');
+      if (!heading || !link || !cover || !title || !artist) return;
+
+      heading.textContent = payload.isPlaying ? 'Lyssnar på just nu' : 'Senast spelad';
+      link.href = payload.url || '#';
+      cover.src = payload.albumArt ?? '';
+      cover.alt = payload.title;
+      title.textContent = payload.title;
+      artist.textContent = payload.artist;
+      container.toggleAttribute('data-is-playing', payload.isPlaying);
+      container.hidden = false;
+    } catch {
+      container.hidden = true;
+    }
+  }
+
+  function startPolling() {
+    updateNowPlaying();
+    setInterval(updateNowPlaying, POLL_INTERVAL_MS);
+  }
+
+  if (document.readyState === 'complete') {
+    startPolling();
+  } else {
+    window.addEventListener('load', startPolling);
+  }
+</script>

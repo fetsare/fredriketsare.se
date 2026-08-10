@@ -5,6 +5,7 @@ interface BookItem {
   publishedYear?: string;
   cover: string;
   link?: string;
+  currentlyReading?: boolean;
 }
 
 interface Props {
@@ -20,6 +21,12 @@ const toBookSearchUrl = (book: Pick<BookItem, "title" | "author">) => {
   const query = `${book.title} ${book.author}`.trim().toLowerCase().replace(/\s+/g, "+");
   return `https://isbndb.com/search/books/${encodeURIComponent(query)}`;
 };
+
+const sortedItems = [...items].sort(
+  (a, b) => Number(!!b.currentlyReading) - Number(!!a.currentlyReading),
+);
+
+const readingNowLabel = locale === "en" ? "reading now" : "läser nu";
 ---
 
 <div class="books-widget">
@@ -28,7 +35,7 @@ const toBookSearchUrl = (book: Pick<BookItem, "title" | "author">) => {
   </h2>
   <ul class="books-widget-list">
     {
-      items.map((book) => (
+      sortedItems.map((book) => (
         <li>
           <a
             class="books-widget-row"
@@ -36,17 +43,22 @@ const toBookSearchUrl = (book: Pick<BookItem, "title" | "author">) => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img
-              class="books-widget-cover"
-              src={book.cover}
-              alt=""
-              loading="lazy"
-              width="32"
-              height="46"
-            />
+            <span class:list={["books-widget-cover-wrap", { "is-reading-now": book.currentlyReading }]}>
+              <img
+                class="books-widget-cover"
+                src={book.cover}
+                alt=""
+                loading="lazy"
+                width="32"
+                height="46"
+              />
+            </span>
             <span class="books-widget-meta">
               <span class="books-widget-title">{book.title}</span>
               <span class="books-widget-author">{book.author}</span>
+              {book.currentlyReading && (
+                <span class="books-widget-badge">{readingNowLabel}</span>
+              )}
             </span>
           </a>
         </li>
@@ -86,16 +98,39 @@ const toBookSearchUrl = (book: Pick<BookItem, "title" | "author">) => {
     align-items: center;
     gap: 0.6rem;
     min-width: 0;
+    padding: 0.3rem;
+    margin: -0.3rem;
+    border-radius: 8px;
     text-decoration: none;
     color: inherit;
   }
 
-  .books-widget-cover {
+  .books-widget-cover-wrap {
+    position: relative;
+    display: block;
     width: 32px;
     height: 46px;
-    object-fit: cover;
     border-radius: 3px;
     flex-shrink: 0;
+  }
+
+  .books-widget-cover-wrap.is-reading-now {
+    box-shadow: 0 0 12px 3px rgba(255, 255, 255, 0.55);
+  }
+
+  .books-widget-badge {
+    font-size: 0.62em;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--accent);
+    line-height: 1.3;
+  }
+
+  .books-widget-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     display: block;
   }
 
