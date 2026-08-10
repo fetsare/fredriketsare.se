@@ -114,6 +114,15 @@ import { NAV_LINKS } from "../consts";
     position: relative;
   }
 
+  .nav-menu::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 0.5rem;
+  }
+
   .nav-menu-trigger {
     display: inline-flex;
     align-items: center;
@@ -157,16 +166,7 @@ import { NAV_LINKS } from "../consts";
     display: none;
   }
 
-  .nav-menu-panel::before {
-    content: "";
-    position: absolute;
-    top: -0.5rem;
-    left: 0;
-    right: 0;
-    height: 0.5rem;
-  }
-
-  .nav-menu:hover .nav-menu-panel,
+.nav-menu:hover .nav-menu-panel,
   .nav-menu.open .nav-menu-panel {
     display: block;
   }
