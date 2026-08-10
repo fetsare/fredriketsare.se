@@ -1,0 +1,5 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "fredriketsare-se",
+	"compatibility_date": "2026-04-15"
+}
