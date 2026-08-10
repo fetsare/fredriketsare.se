@@ -4,24 +4,21 @@ import { SITE_DESCRIPTION } from "../consts";
 import BlogPost from "../components/BlogPost.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import BooksColumnList from "../components/BooksColumnList.astro";
-import { getCollection, getEntry, render, type CollectionEntry } from "astro:content";
+import { getEntry } from "astro:content";
+import { getAllPosts, type GhostPost } from "../lib/ghost";
 
-type BlogEntry = CollectionEntry<"blog">;
 type PaginatedBlogPage = {
-  data: BlogEntry[];
+  data: GhostPost[];
   url: {
     prev?: string;
     next?: string;
   };
 };
 
-
 export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
   const POSTS_PER_PAGE = 5;
-  const posts = await getCollection("blog");
-  const visiblePosts = posts.filter((post) => !post.data.draft);
-
-  return paginate(visiblePosts, { pageSize: POSTS_PER_PAGE }).filter(
+  const posts = await getAllPosts('sv');
+  return paginate(posts, { pageSize: POSTS_PER_PAGE }).filter(
     (entry) => Boolean(entry.params.page),
   );
 };
@@ -35,17 +32,14 @@ const recentBooks = booksEntry ? booksEntry.data.items.slice(-RECENT_BOOKS_COUNT
 
 <BaseLayout description={SITE_DESCRIPTION}>
   {
-    page.data.map(async (post, index) => {
-      const { Content } = await render(post);
-      return (
-        <>
-          <BlogPost {...post.data}>
-            <Content />
-          </BlogPost>
-          {index < page.data.length - 1 && <hr class="blog-divider" />}
-        </>
-      );
-    })
+    page.data.map((post, index) => (
+      <>
+        <BlogPost pubDate={post.published_at} title={post.title} featureImage={post.feature_image} featureImageAlt={post.feature_image_alt}>
+          <Fragment set:html={post.html} />
+        </BlogPost>
+        {index < page.data.length - 1 && <hr class="blog-divider" />}
+      </>
+    ))
   }
 
   <nav class="pagination" aria-label="Blog pagination">

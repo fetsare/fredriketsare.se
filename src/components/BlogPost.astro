@@ -1,31 +1,43 @@
 ---
-import type { CollectionEntry } from "astro:content";
 import FormattedDate from "../components/FormattedDate.astro";
 
-type Props = CollectionEntry<"blog">["data"];
+interface Props {
+  pubDate: Date | string;
+  title?: string | null;
+  featureImage?: string | null;
+  featureImageAlt?: string | null;
+}
 
-const { pubDate } = Astro.props;
+const { pubDate, title, featureImage, featureImageAlt } = Astro.props;
 const locale = Astro.url.pathname.startsWith("/en") ? "en" : "sv";
 ---
 
 <style>
-  main {
-    width: calc(100% - 2em);
-    max-width: 100%;
-    margin: 0;
+  .post-title {
+    font-size: 1.15em;
+    margin: 0 0 0.3em;
+    line-height: 1.25;
   }
   .date {
     margin-bottom: 1em;
     color: rgb(var(--gray));
   }
-  .last-updated-on {
-    font-style: italic;
+  .feature-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 1.25rem;
+    display: block;
   }
 </style>
 <article>
   <div class="prose">
+    {featureImage && (
+      <img class="feature-image" src={featureImage} alt={featureImageAlt ?? ""} loading="lazy" />
+    )}
+    {title && <h2 class="post-title">{title}</h2>}
     <div class="date">
-      <FormattedDate date={pubDate} locale={locale} />
+      <FormattedDate date={new Date(pubDate)} locale={locale} />
     </div>
     <slot />
   </div>

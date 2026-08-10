@@ -1,16 +1,11 @@
 ---
 import type { ImageMetadata } from "astro";
-import { getCollection } from "astro:content";
 import { SITE_DESCRIPTION, SITE_DESCRIPTION_EN, SITE_TITLE } from "../consts";
 import BaseHead from "../components/BaseHead.astro";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import { getLocaleFromPathname, getLocalizedPath, type SiteLocale } from "../i18n";
-import {
-  getUniqueSlug,
-  isFeatured,
-  resolveFeaturedSeo,
-} from "../utils/featuredSeo";
+import { getAllPosts } from "../lib/ghost";
 
 interface Props {
   title?: string;
@@ -41,30 +36,17 @@ const alternateUrls = {
   en: new URL(getLocalizedPath(currentPath, "en"), Astro.site),
 };
 
-const featuredSourcePosts =
-  locale === "en" ? await getCollection("blogEn") : await getCollection("blog");
-const featuredFallbackDescription =
-  locale === "en" ? SITE_DESCRIPTION_EN : SITE_DESCRIPTION;
+const ghostLocale = locale === "en" ? "en" : "sv";
 const featuredTitle = locale === "en" ? "Featured posts" : "Utvalda inlagg";
 const featuredPathPrefix = locale === "en" ? "/en/featured/" : "/featured/";
-const usedFeaturedSlugs = new Set<string>();
 
-const featuredLinks = featuredSourcePosts
-  .filter((post) => !post.data.draft && isFeatured(post.data.featured))
-  .map((post) => {
-    const seo = resolveFeaturedSeo({
-      title: post.data.title,
-      body: post.body,
-      featured: post.data.featured,
-      siteTitle: SITE_TITLE,
-      fallbackDescription: featuredFallbackDescription,
-    });
-
-    return {
-      title: post.data.title,
-      href: `${featuredPathPrefix}${getUniqueSlug(seo.slug, usedFeaturedSlugs)}`,
-    };
-  });
+const allPosts = await getAllPosts(ghostLocale);
+const featuredLinks = allPosts
+  .filter((post) => post.featured)
+  .map((post) => ({
+    title: post.title,
+    href: `${featuredPathPrefix}${post.slug}`,
+  }));
 
 const hasBooksColumn = Astro.slots.has("books-column");
 ---

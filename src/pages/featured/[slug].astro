@@ -3,57 +3,29 @@ import type { GetStaticPaths } from "astro";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../../consts";
 import BlogPost from "../../components/BlogPost.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getCollection, render, type CollectionEntry } from "astro:content";
-import {
-  getUniqueSlug,
-  isFeatured,
-  resolveFeaturedSeo,
-} from "../../utils/featuredSeo";
-
-type FeaturedBlogPost = CollectionEntry<"blog">;
+import { getAllPosts, type GhostPost } from "../../lib/ghost";
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const posts: FeaturedBlogPost[] = await getCollection("blog");
-  const usedSlugs = new Set<string>();
-
+  const posts = await getAllPosts('sv');
   return posts
-    .filter((post) => !post.data.draft && isFeatured(post.data.featured))
-    .map((post) => {
-      const seo = resolveFeaturedSeo({
-        title: post.data.title,
-        body: post.body,
-        featured: post.data.featured,
-        siteTitle: SITE_TITLE,
-        fallbackDescription: SITE_DESCRIPTION,
-      });
-
-      return {
-        params: { slug: getUniqueSlug(seo.slug, usedSlugs) },
-        props: { post },
-      };
-    });
+    .filter((post) => post.featured)
+    .map((post) => ({
+      params: { slug: post.slug },
+      props: { post },
+    }));
 };
 
-const { post } = Astro.props as { post: FeaturedBlogPost };
-const { Content } = await render(post);
-
-const seo = resolveFeaturedSeo({
-  title: post.data.title,
-  body: post.body,
-  featured: post.data.featured,
-  siteTitle: SITE_TITLE,
-  fallbackDescription: SITE_DESCRIPTION,
-});
+const { post } = Astro.props as { post: GhostPost };
 
 const canonicalPath = `/featured/${Astro.params.slug}`;
-const seoTitle = seo.seoTitle;
-const seoDescription = seo.seoDescription;
+const seoTitle = post.meta_title ?? `${post.title} | ${SITE_TITLE}`;
+const seoDescription = post.meta_description ?? post.custom_excerpt ?? post.excerpt ?? SITE_DESCRIPTION;
 
 const jsonLd = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  headline: post.data.title,
-  datePublished: post.data.pubDate.toISOString(),
+  headline: post.title,
+  datePublished: post.published_at,
   mainEntityOfPage: new URL(canonicalPath, Astro.site).toString(),
   description: seoDescription,
 });
@@ -64,10 +36,10 @@ const jsonLd = JSON.stringify({
   description={seoDescription}
   canonicalPath={canonicalPath}
   metaType="article"
-  publishedTime={post.data.pubDate.toISOString()}
+  publishedTime={post.published_at}
 >
-  <BlogPost {...post.data}>
-    <Content />
+  <BlogPost pubDate={post.published_at} title={post.title} featureImage={post.feature_image} featureImageAlt={post.feature_image_alt}>
+    <Fragment set:html={post.html} />
   </BlogPost>
 
   <p><a href="/">← Tillbaka till bloggen</a></p>
