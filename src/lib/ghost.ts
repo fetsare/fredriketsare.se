@@ -4,6 +4,26 @@ const api = new GhostContentAPI({
   url: import.meta.env.GHOST_API_URL,
   key: import.meta.env.GHOST_CONTENT_API_KEY,
   version: 'v5.0',
+  // The default axios transport sets a fetch `cache` mode that workerd rejects
+  // ("Unsupported cache mode: default"), so use plain fetch instead.
+  makeRequest: async ({ url, params, headers }: {
+    url: string;
+    params: Record<string, unknown>;
+    headers: Record<string, string>;
+  }) => {
+    const query = Object.entries(params)
+      .map(([k, v]) => `${k}=${encodeURIComponent(([] as unknown[]).concat(v).join(','))}`)
+      .join('&');
+    const response = await fetch(`${url}?${query}`, { headers });
+    const data = await response.json();
+    if (!response.ok) {
+      // Mirror axios' error shape so the SDK can surface Ghost's error message
+      throw Object.assign(new Error(`Ghost API request failed: ${response.status}`), {
+        response: { status: response.status, data },
+      });
+    }
+    return { data };
+  },
 });
 
 export interface GhostPost {

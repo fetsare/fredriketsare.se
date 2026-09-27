@@ -82,6 +82,10 @@ items:
     author: "Fredrik Backman"
     publishedYear: "2025"
     cover: /images/books/mina-vanner.jpg
+  - title: "Red Rising"
+    author: "Pierce Brown"
+    publishedYear: "2014"
+    cover: /images/books/red-rising.jpg
     currentlyReading: true
 ---
 
