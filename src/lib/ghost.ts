@@ -41,6 +41,14 @@ export interface GhostPost {
   featured: boolean;
   meta_title: string | null;
   meta_description: string | null;
+  header_video: HeaderVideo | null;
+}
+
+export interface HeaderVideo {
+  src: string;
+  poster: string | null;
+  width: number | null;
+  height: number | null;
 }
 
 // locale='en'  → only posts tagged with internal tag #lang-en
@@ -59,11 +67,44 @@ export async function getAllPosts(locale?: 'sv' | 'en'): Promise<GhostPost[]> {
   };
   if (filter) params.filter = filter;
 
-  return api.posts.browse(params) as unknown as GhostPost[];
+  const posts = await api.posts.browse(params) as unknown as GhostPost[];
+  return posts.map(withHeaderVideo);
 }
 
 export async function getPostBySlug(slug: string): Promise<GhostPost> {
-  return api.posts.read({ slug }, { include: ['tags'] }) as unknown as GhostPost;
+  const post = await api.posts.read({ slug }, { include: ['tags'] }) as unknown as GhostPost;
+  return withHeaderVideo(post);
+}
+
+// A Ghost video card placed as the first block of a post becomes its header video,
+// and is removed from the body so it isn't shown twice.
+function withHeaderVideo(post: GhostPost): GhostPost {
+  const html = post.html ?? '';
+  const cardStart = html.match(/^\s*<figure\b[^>]*\bkg-video-card\b[^>]*>/);
+  if (!cardStart) return { ...post, header_video: null };
+
+  const cardEnd = html.indexOf('</figure>', cardStart[0].length);
+  if (cardEnd === -1) return { ...post, header_video: null };
+
+  const card = html.slice(0, cardEnd + 9);
+  const src = card.match(/<video\b[^>]*\bsrc="([^"]+)"/)?.[1];
+  if (!src) return { ...post, header_video: null };
+
+  const attr = (name: string) => card.match(new RegExp(`\\b${name}="?([^"\\s>]+)"?`))?.[1];
+  const usable = (url?: string) => (url && url !== 'null' && url !== 'undefined' ? url : undefined);
+  const poster =
+    usable(attr('data-kg-custom-thumbnail')) ??
+    usable(attr('data-kg-thumbnail')) ??
+    usable(card.match(/url\('([^']+)'\)/)?.[1]) ??
+    post.feature_image;
+  const width = Number(attr('width')) || null;
+  const height = Number(attr('height')) || null;
+
+  return {
+    ...post,
+    html: html.slice(cardEnd + 9),
+    header_video: { src, poster: poster ?? null, width, height },
+  };
 }
 
 export interface GalleryResult {

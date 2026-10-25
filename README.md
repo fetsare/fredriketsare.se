@@ -27,17 +27,17 @@ Bygg för produktion:
 npm run build
 ```
 
-## Drönarvideo på startsidan
+## Video som header på inlägg
 
-Startsidan visar en video högst upp om det finns filer i `src/assets/videos/`.
-Koda om råfilmen med ffmpeg:
+Lägg ett videokort (`/video`) som **första block** i inlägget i Ghost. Sidan lyfter då ut
+videon och visar den som header (autoplay, ljudlös, loopar) i stället för feature image.
+Miniatyren från Ghost används som poster.
+
+Komprimera råfilm (t.ex. drönarfilm) innan uppladdning:
 
 ```bash
-scripts/encode-video.sh ~/Movies/min-dronarfilm.mov
+scripts/encode-video.sh ~/Movies/min-dronarfilm.mov   # → min-dronarfilm-web.mp4
 ```
-
-Det skapar `drone.mp4`, `drone.webm` och `drone.jpg` (poster). Håll varje fil under ~20 MB
-(Cloudflare tillåter max 25 MB per fil). Finns inga filer visas ingen video.
 
 ## Hosting-alternativ
 

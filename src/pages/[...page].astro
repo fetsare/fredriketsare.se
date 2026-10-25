@@ -34,7 +34,7 @@ const recentBooks = booksEntry ? booksEntry.data.items.slice(-RECENT_BOOKS_COUNT
   {
     page.data.map((post, index) => (
       <>
-        <BlogPost pubDate={post.published_at} title={post.title} featureImage={post.feature_image} featureImageAlt={post.feature_image_alt}>
+        <BlogPost pubDate={post.published_at} title={post.title} featureImage={post.feature_image} featureImageAlt={post.feature_image_alt} headerVideo={post.header_video}>
           <Fragment set:html={post.html} />
         </BlogPost>
         {index < page.data.length - 1 && <hr class="blog-divider" />}

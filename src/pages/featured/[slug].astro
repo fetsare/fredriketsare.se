@@ -38,7 +38,7 @@ const jsonLd = JSON.stringify({
   metaType="article"
   publishedTime={post.published_at}
 >
-  <BlogPost pubDate={post.published_at} title={post.title} featureImage={post.feature_image} featureImageAlt={post.feature_image_alt}>
+  <BlogPost pubDate={post.published_at} title={post.title} featureImage={post.feature_image} featureImageAlt={post.feature_image_alt} headerVideo={post.header_video}>
     <Fragment set:html={post.html} />
   </BlogPost>
 

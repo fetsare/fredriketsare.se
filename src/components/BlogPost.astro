@@ -1,14 +1,16 @@
 ---
 import FormattedDate from "../components/FormattedDate.astro";
+import type { HeaderVideo } from "../lib/ghost";
 
 interface Props {
   pubDate: Date | string;
   title?: string | null;
   featureImage?: string | null;
   featureImageAlt?: string | null;
+  headerVideo?: HeaderVideo | null;
 }
 
-const { pubDate, title, featureImage, featureImageAlt } = Astro.props;
+const { pubDate, title, featureImage, featureImageAlt, headerVideo } = Astro.props;
 ---
 
 <style>
@@ -28,10 +30,48 @@ const { pubDate, title, featureImage, featureImageAlt } = Astro.props;
     margin-bottom: 1.25rem;
     display: block;
   }
+  .header-video {
+    margin: 0 0 1.25rem;
+  }
+  .header-video video,
+  .header-video img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    background: rgb(var(--surface-elevated));
+  }
+  .header-video img {
+    display: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .header-video:has(img) video {
+      display: none;
+    }
+    .header-video img {
+      display: block;
+    }
+  }
 </style>
 <article>
   <div class="prose">
-    {featureImage && (
+    {headerVideo ? (
+      <figure class="header-video">
+        <video
+          src={headerVideo.src}
+          poster={headerVideo.poster ?? undefined}
+          width={headerVideo.width ?? undefined}
+          height={headerVideo.height ?? undefined}
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          aria-label={title ?? undefined}
+        />
+        {headerVideo.poster && <img src={headerVideo.poster} alt={title ?? ""} />}
+      </figure>
+    ) : featureImage && (
       <img class="feature-image" src={featureImage} alt={featureImageAlt ?? ""} loading="lazy" />
     )}
     {title && <h2 class="post-title">{title}</h2>}

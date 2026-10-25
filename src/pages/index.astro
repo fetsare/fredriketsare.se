@@ -3,7 +3,6 @@ import { SITE_DESCRIPTION } from "../consts";
 import BlogPost from "../components/BlogPost.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import BooksColumnList from "../components/BooksColumnList.astro";
-import HeroVideo from "../components/HeroVideo.astro";
 import FormattedDate from "../components/FormattedDate.astro";
 import NowPlaying from "../components/NowPlaying.astro";
 import GithubActivity from "../components/GithubActivity.astro";
@@ -21,8 +20,6 @@ const recentBooks = booksEntry ? booksEntry.data.items.slice(-RECENT_BOOKS_COUNT
 ---
 
 <BaseLayout description={SITE_DESCRIPTION}>
-  <HeroVideo label="Drönarfilm" />
-
   {
     fullPosts.map((post, index) => (
       <>
@@ -31,6 +28,7 @@ const recentBooks = booksEntry ? booksEntry.data.items.slice(-RECENT_BOOKS_COUNT
           title={post.title}
           featureImage={post.feature_image}
           featureImageAlt={post.feature_image_alt}
+          headerVideo={post.header_video}
         >
           <Fragment set:html={post.html} />
         </BlogPost>
