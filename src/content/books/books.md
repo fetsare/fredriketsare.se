@@ -26,6 +26,10 @@ items:
     author: "Victoria Aveyard"
     publishedYear: "2017"
     cover: /images/books/kings-cage.jpg
+  - title: "Where the Crawdads Sing"
+    author: "Delia Owens"
+    publishedYear: "2018"
+    cover: /images/books/where-the-crawdads-sing.jpg
   - title: "Frankenstein"
     author: "Mary Shelley"
     publishedYear: "1818"
@@ -86,10 +90,10 @@ items:
     author: "Pierce Brown"
     publishedYear: "2014"
     cover: /images/books/red-rising.jpg
-  - title: "Where the Crawdads Sing"
-    author: "Delia Owens"
-    publishedYear: "2018"
-    cover: /images/books/where-the-crawdads-sing.jpg
+  - title: "Golden Son"
+    author: "Pierce Brown"
+    publishedYear: "2015"
+    cover: /images/books/golden-son.jpg
     currentlyReading: true
 ---
 
