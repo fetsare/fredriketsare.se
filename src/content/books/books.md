@@ -86,7 +86,6 @@ items:
     author: "Pierce Brown"
     publishedYear: "2014"
     cover: /images/books/red-rising.jpg
-    currentlyReading: true
 ---
 
 Här är lite böcker jag läst som jag tycker du bör läsa.
