@@ -27,6 +27,18 @@ Bygg för produktion:
 npm run build
 ```
 
+## Drönarvideo på startsidan
+
+Startsidan visar en video högst upp om det finns filer i `src/assets/videos/`.
+Koda om råfilmen med ffmpeg:
+
+```bash
+scripts/encode-video.sh ~/Movies/min-dronarfilm.mov
+```
+
+Det skapar `drone.mp4`, `drone.webm` och `drone.jpg` (poster). Håll varje fil under ~20 MB
+(Cloudflare tillåter max 25 MB per fil). Finns inga filer visas ingen video.
+
 ## Hosting-alternativ
 
 Du kan hosta sidan på flera ställen, t.ex:

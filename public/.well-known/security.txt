@@ -1,0 +1,4 @@
+Contact: https://github.com/fetsare
+Expires: 2027-10-25T00:00:00.000Z
+Preferred-Languages: sv, en
+Canonical: https://fredriketsare.se/.well-known/security.txt

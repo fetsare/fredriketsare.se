@@ -1,0 +1,72 @@
+---
+interface Props {
+  name?: string;
+  label: string;
+}
+
+const { name = "drone", label } = Astro.props;
+
+// Resolved at build time; images import as ImageMetadata, videos as URL strings
+const files = import.meta.glob<{ src: string } | string>(
+  "../assets/videos/*.{webm,mp4,jpg}",
+  { eager: true, import: "default" },
+);
+const find = (ext: string) => {
+  const file = files[`../assets/videos/${name}.${ext}`];
+  return typeof file === "string" ? file : file?.src;
+};
+
+const webm = find("webm");
+const mp4 = find("mp4");
+const poster = find("jpg");
+---
+
+{
+  (webm || mp4) && (
+    <figure class="hero-video">
+      <video
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+        poster={poster}
+        aria-label={label}
+      >
+        {webm && <source src={webm} type="video/webm" />}
+        {mp4 && <source src={mp4} type="video/mp4" />}
+      </video>
+      {poster && <img src={poster} alt={label} />}
+    </figure>
+  )
+}
+
+<style>
+  .hero-video {
+    margin: 0 0 1.5rem;
+  }
+
+  .hero-video video,
+  .hero-video img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 8px;
+    background: rgb(var(--surface-elevated));
+  }
+
+  .hero-video img {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-video:has(img) video {
+      display: none;
+    }
+
+    .hero-video img {
+      display: block;
+    }
+  }
+</style>
