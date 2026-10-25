@@ -1,6 +1,6 @@
 ---
 import SocialLinks from "./SocialLinks.astro";
-import { NAV_LINKS } from "../consts";
+import { NAV_LINKS, isExternalLink } from "../consts";
 
 const today = new Date();
 ---
@@ -10,7 +10,7 @@ const today = new Date();
     <div class="internal-links" aria-label="Sidfotsnavigering">
       {
         NAV_LINKS.map((link) => {
-          const isExternal = link.href.startsWith("http");
+          const isExternal = isExternalLink(link.href);
           return (
             <a
               href={link.href}

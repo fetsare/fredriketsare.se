@@ -2,7 +2,34 @@
 import AvatarImage from "../assets/fredrik.webp";
 import HeaderLink from "./HeaderLink.astro";
 import SocialLinks from "./SocialLinks.astro";
-import { NAV_LINKS } from "../consts";
+import { NAV_LINKS, isExternalLink } from "../consts";
+
+const NAV_ICONS: Record<(typeof NAV_LINKS)[number]["icon"], string> = {
+  home: '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  projects:
+    '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
+  about: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  books:
+    '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
+  gallery:
+    '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>',
+  status:
+    '<path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>',
+};
+
+const ICON_ATTRS = {
+  xmlns: "http://www.w3.org/2000/svg",
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  "stroke-width": "2",
+  "stroke-linecap": "round",
+  "stroke-linejoin": "round",
+  "aria-hidden": "true",
+} as const;
+
+const internalLinks = NAV_LINKS.filter((link) => !isExternalLink(link.href));
+const externalLinks = NAV_LINKS.filter((link) => isExternalLink(link.href));
 ---
 
 <header>
@@ -25,12 +52,12 @@ import { NAV_LINKS } from "../consts";
         <SocialLinks />
       </div>
 
-      <div class="nav-menu">
+      <div class="nav-menu" data-nav-menu>
         <button
           type="button"
           class="nav-menu-trigger"
-          aria-haspopup="true"
           aria-expanded="false"
+          aria-controls="nav-menu-panel"
         >
           <span>Meny</span>
           <svg
@@ -50,26 +77,48 @@ import { NAV_LINKS } from "../consts";
           </svg>
         </button>
 
-        <nav class="nav-menu-panel" aria-label="Huvudnavigering">
-          <ul>
+        <nav id="nav-menu-panel" class="nav-menu-panel" aria-label="Huvudnavigering">
+          <ul class="nav-menu-list">
             {
-              NAV_LINKS.map((link) => {
-                const isExternal = link.href.startsWith("http");
-                return (
+              internalLinks.map((link) => (
+                <li>
+                  <HeaderLink class="nav-menu-link" href={link.href}>
+                    <svg class="nav-menu-icon" {...ICON_ATTRS} set:html={NAV_ICONS[link.icon]} />
+                    <span>{link.label}</span>
+                  </HeaderLink>
+                </li>
+              ))
+            }
+          </ul>
+
+          {
+            externalLinks.length > 0 && (
+              <ul class="nav-menu-list nav-menu-list--external">
+                {externalLinks.map((link) => (
                   <li>
                     <HeaderLink
                       class="nav-menu-link"
                       href={link.href}
-                      target={isExternal ? "_blank" : undefined}
-                      rel={isExternal ? "noopener noreferrer" : undefined}
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
-                      {link.label}
+                      <svg class="nav-menu-icon" {...ICON_ATTRS} set:html={NAV_ICONS[link.icon]} />
+                      <span>{link.label}</span>
+                      <span class="sr-only">(öppnas i ny flik)</span>
+                      <svg class="nav-menu-external" {...ICON_ATTRS}>
+                        <path d="M7 7h10v10" />
+                        <path d="M7 17 17 7" />
+                      </svg>
                     </HeaderLink>
                   </li>
-                );
-              })
-            }
-          </ul>
+                ))}
+              </ul>
+            )
+          }
+
+          <div class="nav-menu-social">
+            <SocialLinks />
+          </div>
         </nav>
       </div>
     </div>
@@ -136,45 +185,58 @@ import { NAV_LINKS } from "../consts";
   }
 
   .nav-menu {
+    --nav-menu-shadow:
+      0 12px 32px -8px rgba(22, 30, 44, 0.18), 0 2px 6px rgba(22, 30, 44, 0.06);
     position: relative;
   }
 
-  .nav-menu::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    height: 0.5rem;
+  @media (prefers-color-scheme: dark) {
+    .nav-menu {
+      --nav-menu-shadow:
+        0 12px 32px -8px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
   }
 
   .nav-menu-trigger {
     display: inline-flex;
     align-items: center;
-    gap: 0.4em;
-    padding: 0.4em 0.75em;
+    gap: 0.45em;
+    padding: 0.4em 0.65em 0.4em 0.85em;
     border-radius: 9999px;
-    border: none;
+    border: 1px solid rgb(var(--surface-divider));
     background: none;
     color: rgb(var(--text-primary));
     font-family: inherit;
-    font-size: 0.85em;
+    font-size: 0.8em;
+    line-height: 1.2;
     cursor: pointer;
-    transition: background-color 0.15s ease;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease;
   }
 
-  .nav-menu-trigger:hover,
-  .nav-menu:hover .nav-menu-trigger,
-  .nav-menu.open .nav-menu-trigger {
+  .nav-menu-trigger[aria-expanded="true"] {
     background: rgb(var(--surface-elevated));
   }
 
+  /* Touch devices keep :hover after a tap, which would make a closed menu look open */
+  @media (hover: hover) {
+    .nav-menu-trigger:hover {
+      background: rgb(var(--surface-elevated));
+    }
+  }
+
+  .nav-menu-trigger:focus-visible {
+    outline: 2px solid rgb(var(--gray));
+    outline-offset: 2px;
+  }
+
   .nav-menu-chevron {
+    color: rgb(var(--text-muted));
     transition: transform 0.2s ease;
   }
 
-  .nav-menu:hover .nav-menu-chevron,
-  .nav-menu.open .nav-menu-chevron {
+  .nav-menu-trigger[aria-expanded="true"] .nav-menu-chevron {
     transform: rotate(180deg);
   }
 
@@ -182,88 +244,210 @@ import { NAV_LINKS } from "../consts";
     position: absolute;
     top: calc(100% + 0.5rem);
     right: 0;
-    min-width: 160px;
+    z-index: 50;
+    width: min(14rem, calc(100vw - 2rem));
+    padding: 0.35rem;
     background: var(--page-bg);
     border: 1px solid rgb(var(--surface-divider));
-    border-radius: 10px;
-    padding: 0.3rem;
-    z-index: 50;
-    display: none;
+    border-radius: 12px;
+    box-shadow: var(--nav-menu-shadow);
+    transform-origin: top right;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px) scale(0.97);
+    transition:
+      opacity 0.14s ease,
+      transform 0.14s ease,
+      visibility 0s linear 0.14s;
   }
 
-.nav-menu:hover .nav-menu-panel,
   .nav-menu.open .nav-menu-panel {
-    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition:
+      opacity 0.14s ease,
+      transform 0.14s ease,
+      visibility 0s;
   }
 
-  .nav-menu-panel ul {
+  @media (prefers-reduced-motion: reduce) {
+    .nav-menu-panel,
+    .nav-menu.open .nav-menu-panel,
+    .nav-menu-chevron {
+      transition: none;
+    }
+  }
+
+  .nav-menu-list {
     list-style: none;
     margin: 0;
     padding: 0;
   }
 
-  .nav-menu-panel li + li {
-    border-top: 1px solid rgba(var(--surface-divider), 0.6);
+  .nav-menu-list--external {
+    margin-top: 0.35rem;
+    padding-top: 0.35rem;
+    border-top: 1px solid rgb(var(--surface-divider));
   }
 
   .nav-menu-panel :global(a.nav-menu-link) {
-    display: block;
-    padding: 0.6em 0.7em;
-    border-radius: 6px;
-    color: rgb(var(--text-muted));
-    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    padding: 0.55em 0.65em;
+    border-radius: 8px;
+    color: rgb(var(--text-primary));
+    font-size: 0.8em;
+    line-height: 1.3;
     text-decoration: none;
     transition:
-      background-color 0.15s ease,
-      color 0.15s ease;
+      background-color 0.12s ease,
+      color 0.12s ease;
   }
 
-  .nav-menu-panel :global(a.nav-menu-link:hover) {
+  .nav-menu-panel :global(a.nav-menu-link:hover),
+  .nav-menu-panel :global(a.nav-menu-link:focus-visible) {
     background: rgb(var(--surface-elevated));
     color: rgb(var(--text-primary));
   }
 
+  /* An outline (unlike box-shadow) stays visible in forced-colors mode */
+  .nav-menu-panel :global(a.nav-menu-link:focus-visible) {
+    outline: 2px solid rgb(var(--gray));
+    outline-offset: -2px;
+  }
+
   .nav-menu-panel :global(a.nav-menu-link.active) {
-    color: rgb(var(--gray));
+    background: rgba(var(--gray), 0.12);
+    color: rgb(var(--text-primary));
     font-weight: 700;
+  }
+
+  .nav-menu-icon {
+    width: 1.1em;
+    height: 1.1em;
+    flex-shrink: 0;
+    color: rgb(var(--text-muted));
+    transition: color 0.12s ease;
+  }
+
+  .nav-menu-panel :global(a.nav-menu-link:hover) .nav-menu-icon,
+  .nav-menu-panel :global(a.nav-menu-link:focus-visible) .nav-menu-icon {
+    color: rgb(var(--text-primary));
+  }
+
+  .nav-menu-panel :global(a.nav-menu-link.active) .nav-menu-icon {
+    color: rgb(var(--gray));
+  }
+
+  .nav-menu-external {
+    width: 0.9em;
+    height: 0.9em;
+    margin-left: auto;
+    flex-shrink: 0;
+    color: rgb(var(--text-muted));
+  }
+
+  .nav-menu-social {
+    display: none;
+  }
+
+  @media (max-width: 640px) {
+    .nav-menu-social {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 0.35rem;
+      padding: 0.5rem 0.25rem 0.2rem;
+      border-top: 1px solid rgb(var(--surface-divider));
+    }
   }
 </style>
 
 <script>
-  document.querySelectorAll<HTMLElement>(".nav-menu").forEach((menu) => {
+  document.querySelectorAll<HTMLElement>("[data-nav-menu]").forEach((menu) => {
     const trigger = menu.querySelector<HTMLButtonElement>(".nav-menu-trigger");
-    if (!trigger) return;
+    const panel = menu.querySelector<HTMLElement>(".nav-menu-panel");
+    if (!trigger || !panel) return;
 
-    const closeMenu = () => {
-      menu.classList.remove("open");
-      trigger.setAttribute("aria-expanded", "false");
+    const links = Array.from(panel.querySelectorAll<HTMLAnchorElement>("a"));
+    const isOpen = () => menu.classList.contains("open");
+
+    const setOpen = (open: boolean) => {
+      menu.classList.toggle("open", open);
+      trigger.setAttribute("aria-expanded", String(open));
     };
 
-    const openMenu = () => {
-      menu.classList.add("open");
-      trigger.setAttribute("aria-expanded", "true");
+    // The social links in the panel are display: none on wide screens, so skip
+    // anything without a layout box when moving focus with the keyboard.
+    const visibleLinks = () => links.filter((link) => link.getClientRects().length > 0);
+
+    const focusLink = (index: number, targets = visibleLinks()) => {
+      targets[(index + targets.length) % targets.length]?.focus();
     };
 
-    trigger.addEventListener("click", (event) => {
-      event.stopPropagation();
-      if (menu.classList.contains("open")) {
-        closeMenu();
-      } else {
-        openMenu();
+    trigger.addEventListener("click", () => setOpen(!isOpen()));
+
+    trigger.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        setOpen(true);
+        focusLink(event.key === "ArrowDown" ? 0 : -1);
       }
     });
 
-    document.addEventListener("click", (event) => {
-      if (menu.classList.contains("open") && !menu.contains(event.target as Node)) {
-        closeMenu();
+    panel.addEventListener("keydown", (event) => {
+      const targets = visibleLinks();
+      const current = targets.indexOf(document.activeElement as HTMLAnchorElement);
+
+      switch (event.key) {
+        case "ArrowDown":
+          event.preventDefault();
+          focusLink(current + 1, targets);
+          break;
+        case "ArrowUp":
+          event.preventDefault();
+          focusLink(current - 1, targets);
+          break;
+        case "Home":
+          event.preventDefault();
+          focusLink(0, targets);
+          break;
+        case "End":
+          event.preventDefault();
+          focusLink(-1, targets);
+          break;
+      }
+    });
+
+    // Close once a link is activated, including links that open in a new tab
+    panel.addEventListener("click", (event) => {
+      if ((event.target as Element).closest("a")) {
+        setOpen(false);
       }
     });
 
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && menu.classList.contains("open")) {
-        closeMenu();
+      if (event.key === "Escape" && isOpen()) {
+        setOpen(false);
         trigger.focus();
       }
     });
+
+    document.addEventListener("click", (event) => {
+      if (isOpen() && !menu.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    });
+
+    menu.addEventListener("focusout", (event) => {
+      const next = event.relatedTarget as Node | null;
+      if (next && !menu.contains(next)) {
+        setOpen(false);
+      }
+    });
+
+    // Close the menu when the page is restored from the back/forward cache
+    window.addEventListener("pageshow", () => setOpen(false));
   });
 </script>

@@ -9,3 +9,5 @@ export const NAV_LINKS = [
 	{ href: "https://blog.fredriketsare.se/bilder/", label: "Bilder", icon: "gallery" },
 	{ href: "https://status.fredriketsare.se", label: "Status", icon: "status" },
 ] as const;
+
+export const isExternalLink = (href: string) => href.startsWith("http");
