@@ -86,6 +86,11 @@ items:
     author: "Pierce Brown"
     publishedYear: "2014"
     cover: /images/books/red-rising.jpg
+  - title: "Where the Crawdads Sing"
+    author: "Delia Owens"
+    publishedYear: "2018"
+    cover: /images/books/where-the-crawdads-sing.jpg
+    currentlyReading: true
 ---
 
 Här är lite böcker jag läst som jag tycker du bör läsa.
