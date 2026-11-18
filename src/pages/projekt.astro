@@ -6,7 +6,6 @@ import num2kana from "../assets/num2kana.mp4";
 import kiosk from "../assets/kiosk.webp";
 import svd from "../assets/systemvetardagen-se.webp";
 import ak from "../assets/www-akademiskkvart-se.webp";
-import ff from "../assets/foreverflashback.webp";
 
 type MediaSource = { src: string } | string;
 
@@ -23,6 +22,7 @@ type ProjectWithImage = ProjectBase & {
 
 type ProjectWithVideo = ProjectBase & {
   video: MediaSource;
+  poster?: string;
   image?: never;
 };
 
@@ -71,10 +71,20 @@ const hasVideo = (project: Project): project is ProjectWithVideo =>
 
 const projects: Project[] = [
   {
+    title: "Spårdle",
+    description:
+      "Världen hade inte nog med -dle-spel, så här kommer ett till, fast om Stockholms tunnelbana. Idén kom när jag satt på tuben, och då kändes det rimligt att låta den bli spelplanen. Varje dag finns en ny hemlig station och alla gissar på samma. Varje gissning ger ledtrådar om linje, öppningsår, avstånd från T-Centralen och åt vilket håll svaret ligger. Åtta försök, sen får du vänta på nästa avgång imorgon. När du väl hittar stationen visas den på kartan med lite fakta, så lär du dig nätet en station i taget. Mer om bygget i [blogginlägget](https://blog.fredriketsare.se/hur-bra-kan-du-egentligen-tunnelbanan/).",
+    video: "https://blog.fredriketsare.se/content/media/2026/11/spardle.mp4",
+    poster: "https://blog.fredriketsare.se/content/images/2026/11/poster-1.jpg",
+    href: "https://spardle.se",
+  },
+  {
     title: "Forever Flashback",
     description:
       "En hyllning till min favoritpodd [Flashback Forever](https://flashbackforever.se), byggd för att visa lite tacksamhet mot skaparna. Ljudet klipps och normaliseras med [ffmpeg](https://ffmpeg.org/), transkriberas med [KBLab:s Whisper-modell](https://huggingface.co/KBLab/kb-whisper-large) och körs sedan genom [KBLab:s NER-modell](https://huggingface.co/KBLab/bert-base-swedish-cased-ner) för att hitta namn, platser och andra omnämnanden i varje avsnitt. Texten används sedan för att bygga ett sökindex med Postgres inbyggda [full text search](https://www.postgresql.org/docs/current/textsearch.html), tillsammans med statistik som omnämnanden, volymnivåer och annat kul jag kunde gräva fram.",
-    image: ff,
+    video:
+      "https://blog.fredriketsare.se/content/media/2026/11/forever-flashback.mp4",
+    poster: "https://blog.fredriketsare.se/content/images/2026/11/poster.jpg",
     href: "https://foreverflashback.se",
   },
   {
@@ -119,48 +129,61 @@ const projects: Project[] = [
     href: "https://fredriketsare.se",
   },
 ];
+
+// Alternate projects between two columns so reading order goes left to right
+// (1 2 / 3 4 / …) while each column stacks freely like masonry.
+const columns = [0, 1].map((col) =>
+  projects
+    .map((project, index) => ({ project, index }))
+    .filter(({ index }) => index % 2 === col),
+);
 ---
 
 <BaseLayout description="Projekt av Fredrik Etsare." wide>
   <section>
     {
-      projects.map((project, index) => (
-        <article>
-          {hasVideo(project) ? (
-            <video
-              class="project-media"
-              autoplay
-              loop
-              muted
-              playsinline
-              preload="metadata"
-            >
-              <source src={getMediaSrc(project.video)} />
-              Din webbläsare stödjer inte videouppspelning.
-            </video>
-          ) : (
-            <img
-              class="project-media"
-              src={getMediaSrc(project.image)}
-              alt={project.title}
-              loading="lazy"
-            />
-          )}
+      columns.map((column) => (
+        <div class="project-column">
+          {column.map(({ project, index }) => (
+            <article style={`order: ${index}`}>
+              {hasVideo(project) ? (
+                <video
+                  class="project-media"
+                  autoplay
+                  loop
+                  muted
+                  playsinline
+                  preload="metadata"
+                  poster={project.poster}
+                >
+                  <source src={getMediaSrc(project.video)} />
+                  Din webbläsare stödjer inte videouppspelning.
+                </video>
+              ) : (
+                <img
+                  class="project-media"
+                  src={getMediaSrc(project.image)}
+                  alt={project.title}
+                  loading="lazy"
+                />
+              )}
 
-          <h4>
-            {project.href ? (
-              <a href={project.href} target="_blank" rel="noopener noreferrer">
-                {project.title}
-              </a>
-            ) : (
-              project.title
-            )}
-          </h4>
+              <h4>
+                {project.href ? (
+                  <a href={project.href} target="_blank" rel="noopener noreferrer">
+                    {project.title}
+                  </a>
+                ) : (
+                  project.title
+                )}
+              </h4>
 
-          <p set:html={renderDescription(project.description)} />
+              <p set:html={renderDescription(project.description)} />
 
-          {index < projects.length - 1 && <hr class="project-divider" />}
-        </article>
+              {index < projects.length - 1 && <hr class="project-divider" />}
+            </article>
+          ))}
+        </div>
       ))
     }
   </section>
@@ -194,20 +217,39 @@ const projects: Project[] = [
     margin: 4rem 0;
   }
 
+  /* On mobile the columns dissolve and `order` restores the original sequence */
+  section {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .project-column {
+    display: contents;
+  }
+
   @media (min-width: 721px) {
     section {
-      column-count: 2;
-      column-gap: 3rem;
-      column-rule: 1px solid rgb(var(--surface-divider));
+      flex-direction: row;
+      align-items: flex-start;
     }
 
-    article {
-      break-inside: avoid;
+    .project-column {
+      display: block;
+      flex: 1 1 0;
+      min-width: 0;
     }
 
-    .project-divider {
-      break-after: avoid;
-      break-before: avoid;
+    .project-column:first-child {
+      padding-right: 1.5rem;
+    }
+
+    .project-column + .project-column {
+      padding-left: 1.5rem;
+      border-left: 1px solid rgb(var(--surface-divider));
+    }
+
+    .project-column > article:last-child .project-divider {
+      display: none;
     }
   }
 </style>
